@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILE = path.join(__dirname, 'db.json');
 
-const DEFAULT_ASSETS = [
+export const DEFAULT_ASSETS = [
   {
     id: 'AST-1042',
     name: 'MacBook Pro 16" M2 Max',
@@ -400,7 +400,7 @@ const DEFAULT_ASSETS = [
   }
 ];
 
-const DEFAULT_TICKETS = [
+export const DEFAULT_TICKETS = [
   { id: 'TKT-8902', assetId: 'AST-0854', assetName: 'ThinkPad X1 Carbon', type: 'Reparación de Teclado', severity: 'Media', tech: 'Juan Pérez', cost: '$120.000', status: 'Pending', date: '25 jun 2026' },
   { id: 'TKT-8891', assetId: 'AST-1042', assetName: 'MacBook Pro 16" M2 Max', type: 'Reemplazo de Batería', severity: 'Alta', tech: 'Carlos Gómez', cost: '$0 (Garantía)', status: 'Resolved', date: '20 jun 2026' },
   { id: 'TKT-8874', assetId: 'AST-3102', assetName: 'Cisco Meraki MR46 AP', type: 'Fallo de Conexión / Firmware', severity: 'Crítica', tech: 'Equipo de Red', cost: 'N/A', status: 'Resolved', date: '15 jun 2026' },
@@ -408,7 +408,7 @@ const DEFAULT_TICKETS = [
   { id: 'TKT-8912', assetId: 'AST-5182', assetName: 'iPhone 15 Pro', type: 'Pantalla Rota', severity: 'Baja', tech: 'Soporte Externo', cost: '$1.000.000', status: 'Pending', date: '26 jun 2026' },
 ];
 
-const DEFAULT_LOGS = [
+export const DEFAULT_LOGS = [
   { id: 'LOG-80491', user: 'Sarah Jenkins', email: 's.jenkins@enterprise.com', action: 'Asignación', detail: 'Laptop AST-1042 (MacBook Pro) fue asignada correctamente.', time: 'Hace 2m', icon: 'person_add', iconColor: '#16a34a', iconBg: 'rgba(22,163,74,0.08)' },
   { id: 'LOG-80490', user: 'Soporte de TI', email: 'it@enterprise.com', action: 'Mantenimiento', detail: 'AST-0854 (ThinkPad X1) movido al grupo de reparación por falla de teclado.', time: 'Hace 1h', icon: 'build', iconColor: '#d97706', iconBg: 'rgba(217,119,6,0.08)' },
   { id: 'LOG-80489', user: 'Admin del Sistema', email: 'admin@enterprise.com', action: 'Registro', detail: 'Nuevo activo AST-6029 (Dell Precision 7960) registrado e importado al catálogo.', time: 'Hace 3h', icon: 'add_box', iconColor: '#7c3aed', iconBg: 'rgba(124,58,237,0.08)' },
@@ -417,13 +417,13 @@ const DEFAULT_LOGS = [
   { id: 'LOG-80486', user: 'Soporte de TI', email: 'it@enterprise.com', action: 'Baja', detail: 'AST-1011 (ThinkPad X270) fue dado de baja por obsolescencia tecnológica (chatarra).', time: 'Hace 4 días', icon: 'delete', iconColor: '#dc2626', iconBg: 'rgba(220,38,38,0.08)' },
 ];
 
-const DEFAULT_AUDIT_SESSIONS = [
+export const DEFAULT_AUDIT_SESSIONS = [
   { id: 'AUD-2026-A', name: 'Auditoría Anual Sede New York', date: '15 may 2026', totalChecked: 8520, compliance: '99.8%', status: 'Completado' },
   { id: 'AUD-2026-B', name: 'Conciliación Sucursal San Francisco', date: '10 jun 2026', totalChecked: 3120, compliance: '99.2%', status: 'Completado' },
   { id: 'AUD-2026-C', name: 'Monitoreo General de Equipos Remotos', date: 'En curso', totalChecked: 1456, compliance: '97.5%', status: 'En Progreso' },
 ];
 
-const DEFAULT_USER = {
+export const DEFAULT_USER = {
   email: "admin@enterprise.com",
   password: "admin123",
   name: "Administrador"
