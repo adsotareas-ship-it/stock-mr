@@ -13,6 +13,7 @@ const navItems = [
 export default function Sidebar({ onNewAssetClick }) {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ name: 'Administrador', email: 'admin@enterprise.com' });
+  const [assetsCount, setAssetsCount] = useState(0);
 
   const loadProfile = async () => {
     try {
@@ -23,10 +24,24 @@ export default function Sidebar({ onNewAssetClick }) {
     }
   };
 
+  const loadAssetsCount = async () => {
+    try {
+      const data = await api.getAssets();
+      setAssetsCount(data.length);
+    } catch (err) {
+      console.error("Error loading assets count in sidebar:", err);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
+    loadAssetsCount();
     window.addEventListener('profile-updated', loadProfile);
-    return () => window.removeEventListener('profile-updated', loadProfile);
+    window.addEventListener('inventory-updated', loadAssetsCount);
+    return () => {
+      window.removeEventListener('profile-updated', loadProfile);
+      window.removeEventListener('inventory-updated', loadAssetsCount);
+    };
   }, []);
 
   const getInitials = (name) => {
@@ -140,7 +155,9 @@ export default function Sidebar({ onNewAssetClick }) {
               <span className="dot-pulse" style={{ color: '#16a34a', background: '#16a34a' }} />
               <span className="text-[11px] text-green-700 font-semibold">Sistemas Funcionando</span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5 ml-[17px]">14,296 activos rastreados</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 ml-[17px]">
+              {assetsCount.toLocaleString()} {assetsCount === 1 ? 'activo rastreado' : 'activos rastreados'}
+            </div>
           </div>
 
           <Link
