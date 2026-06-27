@@ -4,8 +4,8 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.replace(/\/$/, '') : null;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.trim().replace(/\/$/, '') : null;
+const supabaseKey = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() : null;
 const isSupabaseEnabled = !!(supabaseUrl && supabaseKey);
 const supabase = isSupabaseEnabled ? createClient(supabaseUrl, supabaseKey) : null;
 
