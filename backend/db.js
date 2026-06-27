@@ -205,6 +205,198 @@ const DEFAULT_ASSETS = [
       { action: 'Desplegado en Servidor Central', date: '10 dic 2023', by: 'Admin de Red', type: 'provision' }
     ],
     maintenance: []
+  },
+  {
+    id: 'AST-7010',
+    name: 'Cisco Catalyst 9300 Switch',
+    sub: 'C9300-48T-A · 48 Puertos GigE',
+    category: 'Networking',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$15.600.000',
+    lastAudit: '20 ene 2026',
+    serial: 'SN-CISCO-9300-48T',
+    purchaseDate: '10 ene 2026',
+    specs: [
+      { icon: 'settings_ethernet', label: 'Puertos', value: '48 x 10/100/1000 base-T + uplinks' },
+      { icon: 'bolt', label: 'PoE', value: 'No compatible (Solo Datos)' }
+    ],
+    warranty: { days: 700, pct: 95, label: 'Cisco SmartNet L3', start: 'ene 2026', end: 'ene 2028', status: 'Active' },
+    financial: { purchase: '$15.600.000', book: '$14.200.000', depreciation: '8.9%', acquired: 'Adquisición de TI' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '10 ene 2026', by: 'Admin de Red', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7011',
+    name: 'HP ProLiant DL380 Gen10',
+    sub: 'Xeon Silver · 64GB RAM · 8 SFF',
+    category: 'Server',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$34.200.000',
+    lastAudit: '15 mar 2026',
+    serial: 'SN-HP-DL380-G10',
+    purchaseDate: '01 mar 2026',
+    specs: [
+      { icon: 'dns', label: 'CPU', value: 'Intel Xeon-S 4210R (10 núcleos)' },
+      { icon: 'memory', label: 'Memoria', value: '64 GB RDIMM DDR4 Dual Rank' }
+    ],
+    warranty: { days: 800, pct: 85, label: 'HPE Foundation Care 24x7', start: 'mar 2026', end: 'mar 2028', status: 'Active' },
+    financial: { purchase: '$34.200.000', book: '$31.000.000', depreciation: '9.3%', acquired: 'Adquisición de TI' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '01 mar 2026', by: 'Admin de Red', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7012',
+    name: 'MikroTik Cloud Core Router',
+    sub: 'CCR2004-16G-2S+ · 16x GigE · 2x SFP+',
+    category: 'Networking',
+    status: 'Deployed',
+    assignee: 'Rack Principal B',
+    assigneeDetail: { name: 'Rack Principal B', role: 'Enrutamiento del Laboratorio', dept: 'Redes', since: '12 abr 2026', email: 'netops@enterprise.com' },
+    location: 'Laboratorio',
+    value: '$3.800.000',
+    lastAudit: '12 abr 2026',
+    serial: 'SN-MIKROTIK-2004',
+    purchaseDate: '01 abr 2026',
+    specs: [
+      { icon: 'router', label: 'CPU', value: 'AL32400 Quad Core 1.7 GHz' },
+      { icon: 'settings_ethernet', label: 'Puertos', value: '16x 10/100/1000 + 2x SFP+' }
+    ],
+    warranty: { days: 365, pct: 100, label: 'Garantía Estándar MikroTik 1 año', start: 'abr 2026', end: 'abr 2027', status: 'Active' },
+    financial: { purchase: '$3.800.000', book: '$3.800.000', depreciation: '0%', acquired: 'Compra Directa' },
+    history: [
+      { action: 'Desplegado en Rack B', date: '12 abr 2026', by: 'Profesor de Redes', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7013',
+    name: 'Lenovo ThinkCentre M70q',
+    sub: 'Intel i5-12400T · 16GB · 512GB SSD',
+    category: 'Desktop',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$2.900.000',
+    lastAudit: '18 ene 2026',
+    serial: 'SN-LENOVO-M70Q-MINI',
+    purchaseDate: '10 ene 2026',
+    specs: [
+      { icon: 'computer', label: 'Factor de Forma', value: 'Tiny (Mini PC de Escritorio)' },
+      { icon: 'memory', label: 'Memoria', value: '16 GB DDR4 SODIMM' }
+    ],
+    warranty: { days: 600, pct: 80, label: 'Soporte Lenovo Onsite L1', start: 'ene 2026', end: 'ene 2029', status: 'Active' },
+    financial: { purchase: '$2.900.000', book: '$2.600.000', depreciation: '10.3%', acquired: 'Compra Directa' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '10 ene 2026', by: 'Soporte Técnico', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7014',
+    name: 'Ubiquiti UniFi Dream Machine',
+    sub: 'UDM-Pro · Firewall de Red L2',
+    category: 'Networking',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$2.200.000',
+    lastAudit: '25 feb 2026',
+    serial: 'SN-UDM-PRO-GATEWAY',
+    purchaseDate: '20 feb 2026',
+    specs: [
+      { icon: 'shield', label: 'Seguridad', value: 'IDS/IPS con rendimiento de 3.5 Gbps' },
+      { icon: 'storage', label: 'Soporte HDD', value: 'Bahía integrada de 3.5" para Protect' }
+    ],
+    warranty: { days: 365, pct: 100, label: 'Ubiquiti Standard Warranty', start: 'feb 2026', end: 'feb 2027', status: 'Active' },
+    financial: { purchase: '$2.200.000', book: '$2.200.000', depreciation: '0%', acquired: 'Compra Directa' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '20 feb 2026', by: 'Admin de Red', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7015',
+    name: 'Fortinet FortiGate 60F',
+    sub: 'FG-60F · Unified Threat Management',
+    category: 'Networking',
+    status: 'Deployed',
+    assignee: 'Borde de Red Principal',
+    assigneeDetail: { name: 'Borde de Red Principal', role: 'Cortafuegos y Filtro de Laboratorio', dept: 'Seguridad', since: '05 ene 2026', email: 'security@enterprise.com' },
+    location: 'Laboratorio',
+    value: '$4.100.000',
+    lastAudit: '05 ene 2026',
+    serial: 'SN-FORTIGATE-60F',
+    purchaseDate: '01 ene 2026',
+    specs: [
+      { icon: 'security', label: 'Firewall', value: 'Rendimiento IPS de 1.4 Gbps · NGFW de 1 Gbps' },
+      { icon: 'router', label: 'Interfaces', value: '10x RJ45 (incluyendo WAN, DMZ y Puertos Internos)' }
+    ],
+    warranty: { days: 730, pct: 90, label: 'FortiCare Premium 24x7', start: 'ene 2026', end: 'ene 2028', status: 'Active' },
+    financial: { purchase: '$4.100.000', book: '$3.800.000', depreciation: '7.3%', acquired: 'Adquisición de TI' },
+    history: [
+      { action: 'Desplegado en el Borde de Red', date: '05 ene 2026', by: 'Admin de Seguridad', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7016',
+    name: 'Raspberry Pi 4 Model B',
+    sub: 'Pi 4 · 8GB RAM · IoT Board',
+    category: 'IoT',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$450.000',
+    lastAudit: '12 dic 2025',
+    serial: 'SN-RASPBERRY-PI4-8G',
+    purchaseDate: '10 dic 2025',
+    specs: [
+      { icon: 'developer_board', label: 'CPU', value: 'Broadcom BCM2711 quad-core Cortex-A72 @ 1.5GHz' },
+      { icon: 'memory', label: 'Memoria', value: '8 GB LPDDR4-3200 SDRAM' }
+    ],
+    warranty: { days: 180, pct: 50, label: 'Garantía Básica Raspberry 1 año', start: 'dic 2025', end: 'dic 2026', status: 'Active' },
+    financial: { purchase: '$450.000', book: '$400.000', depreciation: '11.1%', acquired: 'Compra Directa' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '10 dic 2025', by: 'Auxiliar de Redes', type: 'provision' }
+    ],
+    maintenance: []
+  },
+  {
+    id: 'AST-7017',
+    name: 'Aruba AP-515 Access Point',
+    sub: 'Q9H73A · Campus AP Wi-Fi 6',
+    category: 'Networking',
+    status: 'Available',
+    assignee: null,
+    assigneeDetail: null,
+    location: 'Laboratorio',
+    value: '$3.500.000',
+    lastAudit: '10 feb 2026',
+    serial: 'SN-ARUBA-AP515',
+    purchaseDate: '01 feb 2026',
+    specs: [
+      { icon: 'settings_input_antenna', label: 'Antena', value: 'MIMO 4x4:4 integrado para 5 GHz y 2x2:2 para 2.4 GHz' },
+      { icon: 'wifi', label: 'Estándar', value: 'Wi-Fi 6 (802.11ax) con Smart PoE' }
+    ],
+    warranty: { days: 1000, pct: 95, label: 'Aruba Limited Lifetime Warranty', start: 'feb 2026', end: 'De por Vida', status: 'Active' },
+    financial: { purchase: '$3.500.000', book: '$3.300.000', depreciation: '5.7%', acquired: 'Adquisición de TI' },
+    history: [
+      { action: 'Ingreso al Catálogo', date: '01 feb 2026', by: 'Soporte TI', type: 'provision' }
+    ],
+    maintenance: []
   }
 ];
 
