@@ -43,6 +43,7 @@ export default function Inventory() {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('id');
   const [sortDir, setSortDir] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const loadAssets = async () => {
     try {
@@ -66,6 +67,10 @@ export default function Inventory() {
     window.addEventListener('inventory-updated', handleUpdate);
     return () => window.removeEventListener('inventory-updated', handleUpdate);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter, locationFilter, sortBy, sortDir]);
 
   const handleSort = (col) => {
     if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -307,6 +312,11 @@ export default function Inventory() {
     { label: 'Mantenimiento',   count: assets.filter(a => a.status === 'Maintenance').length,  color: '#b45309', bg: 'rgba(217,119,6,0.08)', filter: 'Maintenance' },
   ];
 
+  const ITEMS_PER_PAGE = 12;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedAssets = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
   return (
     <div className="p-6 lg:p-8 flex flex-col gap-5 animate-fade-in">
       {/* Page Header */}
@@ -450,7 +460,7 @@ export default function Inventory() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length > 0 ? filtered.map((asset) => {
+                {filtered.length > 0 ? paginatedAssets.map((asset) => {
                   const sc = STATUS_CONFIG[asset.status] || STATUS_CONFIG.Available;
                   const catIcon = CATEGORY_ICONS[asset.category] || CATEGORY_ICONS.default;
 
@@ -551,14 +561,15 @@ export default function Inventory() {
             style={{ borderTop: '1px solid #f1f5f9', background: '#fafafa' }}
           >
             <span className="text-[12px] text-slate-400">
-              Mostrando <span className="text-slate-600 font-medium">{filtered.length}</span> de <span className="text-slate-600 font-medium">{assets.length}</span> activos
+              Mostrando <span className="text-slate-600 font-medium">{filtered.length > 0 ? startIndex + 1 : 0}</span> a <span className="text-slate-600 font-medium">{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)}</span> de <span className="text-slate-600 font-medium">{filtered.length}</span> activos
             </span>
             <div className="flex items-center gap-1.5">
-              {[1, 2, 3].map(n => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
                 <button
                   key={n}
+                  onClick={() => setCurrentPage(n)}
                   className="w-7 h-7 rounded-lg text-[12px] font-medium transition-all duration-150"
-                  style={n === 1
+                  style={n === currentPage
                     ? { background: 'rgba(22,163,74,0.1)', color: '#15803d', border: '1px solid rgba(22,163,74,0.2)' }
                     : { background: '#ffffff', color: '#94a3b8', border: '1px solid rgba(15,23,42,0.08)' }
                   }
