@@ -84,8 +84,8 @@ export default function Inventory() {
     .sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1;
       if (sortBy === 'value') {
-        const valA = parseFloat((a.value || '').replace(/[^0-9.]/g, '')) || 0;
-        const valB = parseFloat((b.value || '').replace(/[^0-9.]/g, '')) || 0;
+        const valA = parseFloat((a.value || '').replace(/[^0-9]/g, '')) || 0;
+        const valB = parseFloat((b.value || '').replace(/[^0-9]/g, '')) || 0;
         return (valA - valB) * dir;
       }
       return (a[sortBy] || '').localeCompare(b[sortBy] || '') * dir;

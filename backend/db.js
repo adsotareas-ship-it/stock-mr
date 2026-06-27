@@ -25,7 +25,7 @@ const DEFAULT_ASSETS = [
     tableNumber: 'Mesa 2',
     loanDate: '10:15 AM',
     location: 'Laboratorio',
-    value: '$3,899',
+    value: '$3.899.000',
     lastAudit: '12 oct 2023',
     serial: 'C02FG492Q05D',
     purchaseDate: '12 ene 2023',
@@ -36,7 +36,7 @@ const DEFAULT_ASSETS = [
       { icon: 'wifi_tethering',  label: 'Dirección MAC', value: '00:1A:2B:3C:4D:5E', mono: true },
     ],
     warranty: { days: 412, pct: 65, label: 'AppleCare+ Enterprise L2', start: 'ene 2023', end: 'ene 2026', status: 'Active' },
-    financial: { purchase: '$3,899', book: '$2,450', depreciation: '37.2%', acquired: 'Compra Directa' },
+    financial: { purchase: '$3.899.000', book: '$2.450.000', depreciation: '37.2%', acquired: 'Compra Directa' },
     history: [
       { action: 'Asignado a Sarah Jenkins', date: '12 oct 2023', by: 'Admin del Sistema',  type: 'assign' },
       { action: 'Devuelto de Mantenimiento',  date: '10 oct 2023', by: 'Departamento de TI', type: 'return' },
@@ -57,7 +57,7 @@ const DEFAULT_ASSETS = [
     assignee: null,
     assigneeDetail: null,
     location: 'Laboratorio',
-    value: '$999',
+    value: '$999.000',
     lastAudit: '01 nov 2023',
     serial: 'DELL-32-US-4K',
     purchaseDate: '01 nov 2023',
@@ -67,7 +67,7 @@ const DEFAULT_ASSETS = [
       { icon: 'contrast',        label: 'Contraste', value: '2000:1 · 400 nits' },
     ],
     warranty: { days: 512, pct: 75, label: 'Garantía Estándar Dell Premium', start: 'nov 2023', end: 'nov 2026', status: 'Active' },
-    financial: { purchase: '$999', book: '$720', depreciation: '27.9%', acquired: 'Adquisición de TI' },
+    financial: { purchase: '$999.000', book: '$720.000', depreciation: '27.9%', acquired: 'Adquisición de TI' },
     history: [
       { action: 'Registrado en Inventario', date: '01 nov 2023', by: 'Admin de Adquisiciones', type: 'provision' }
     ],
@@ -82,7 +82,7 @@ const DEFAULT_ASSETS = [
     assignee: 'Depto de TI',
     assigneeDetail: { name: 'Departamento de TI', role: 'Grupo de Reparación Técnica', dept: 'Ops de TI', since: '28 sep 2023', email: 'it@enterprise.com' },
     location: 'Laboratorio',
-    value: '$2,199',
+    value: '$2.199.000',
     lastAudit: '28 sep 2023',
     serial: 'PF-4X1CARB-G10',
     purchaseDate: '10 sep 2021',
@@ -93,13 +93,13 @@ const DEFAULT_ASSETS = [
       { icon: 'wifi_tethering',  label: 'Dirección MAC', value: 'E8:2A:44:BC:D5:18', mono: true },
     ],
     warranty: { days: 0, pct: 0, label: 'Soporte Lenovo Depot (Expirado)', start: 'sep 2021', end: 'sep 2023', status: 'Expired' },
-    financial: { purchase: '$2,199', book: '$1,150', depreciation: '47.7%', acquired: 'Compra Directa' },
+    financial: { purchase: '$2.199.000', book: '$1.150.000', depreciation: '47.7%', acquired: 'Compra Directa' },
     history: [
       { action: 'Movido al Grupo de Mantenimiento', date: '28 sep 2023', by: 'Sarah J.',   type: 'maintenance' },
       { action: 'Asignado a Sarah Jenkins', date: '02 may 2022', by: 'Soporte de TI', type: 'assign' },
     ],
     maintenance: [
-      { date: '29 sep 2023', type: 'Reparación de Teclado', status: 'Pending', cost: '$120.00' },
+      { date: '29 sep 2023', type: 'Reparación de Teclado', status: 'Pending', cost: '$120.000' },
     ]
   },
   {
@@ -111,7 +111,7 @@ const DEFAULT_ASSETS = [
     assignee: 'Piso 3 — Sec. A',
     assigneeDetail: { name: 'Piso 3 — Sector A', role: 'Redes de Instalaciones', dept: 'Instalaciones', since: '15 ago 2023', email: 'facilities@enterprise.com' },
     location: 'Laboratorio',
-    value: '$1,499',
+    value: '$1.499.000',
     lastAudit: '15 ago 2023',
     serial: 'Q2JD-MR46-AP',
     purchaseDate: '01 ago 2023',
@@ -122,7 +122,7 @@ const DEFAULT_ASSETS = [
       { icon: 'signal_wifi_4_bar', label: 'Estándar', value: '802.11ax · 2.4 + 5 + 6 GHz' },
     ],
     warranty: { days: 890, pct: 90, label: 'Garantía de Hardware Meraki de por Vida', start: 'ago 2023', end: 'De por Vida', status: 'Active' },
-    financial: { purchase: '$1,499', book: '$1,200', depreciation: '19.9%', acquired: 'Adquisición de TI' },
+    financial: { purchase: '$1.499.000', book: '$1.200.000', depreciation: '19.9%', acquired: 'Adquisición de TI' },
     history: [
       { action: 'Desplegado en el Piso 3', date: '15 ago 2023', by: 'Equipo de Red', type: 'provision' },
     ],
@@ -139,7 +139,7 @@ const DEFAULT_ASSETS = [
     assignee: null,
     assigneeDetail: null,
     location: 'Laboratorio',
-    value: '$1,099',
+    value: '$1.099.000',
     lastAudit: '05 dic 2023',
     serial: 'IPAD-M2-129',
     purchaseDate: '05 dic 2023',
@@ -149,7 +149,7 @@ const DEFAULT_ASSETS = [
       { icon: 'hard_drive', label: 'Almacenamiento', value: '256 GB de memoria Flash' },
     ],
     warranty: { days: 220, pct: 40, label: 'Garantía Estándar Apple de 1 año', start: 'dic 2023', end: 'dic 2024', status: 'Active' },
-    financial: { purchase: '$1,099', book: '$850', depreciation: '22.6%', acquired: 'Compra Directa' },
+    financial: { purchase: '$1.099.000', book: '$850.000', depreciation: '22.6%', acquired: 'Compra Directa' },
     history: [
       { action: 'Registrado en Catálogo', date: '05 dic 2023', by: 'Admin de Sistema', type: 'provision' }
     ],
@@ -166,7 +166,7 @@ const DEFAULT_ASSETS = [
     tableNumber: 'Mesa 5',
     loanDate: '09:30 AM',
     location: 'Laboratorio',
-    value: '$999',
+    value: '$999.000',
     lastAudit: '20 nov 2023',
     serial: 'IPH-15P-128',
     purchaseDate: '20 nov 2023',
@@ -175,7 +175,7 @@ const DEFAULT_ASSETS = [
       { icon: 'developer_board', label: 'Procesador', value: 'A17 Pro Bionic' },
     ],
     warranty: { days: 190, pct: 35, label: 'Garantía AppleCare+', start: 'nov 2023', end: 'nov 2025', status: 'Active' },
-    financial: { purchase: '$999', book: '$780', depreciation: '21.9%', acquired: 'Compra Directa' },
+    financial: { purchase: '$999.000', book: '$780.000', depreciation: '21.9%', acquired: 'Compra Directa' },
     history: [
       { action: 'Asignado a John D.', date: '20 nov 2023', by: 'IT Support', type: 'assign' }
     ],
@@ -190,7 +190,7 @@ const DEFAULT_ASSETS = [
     assignee: 'Sala de Servidores A',
     assigneeDetail: { name: 'Sala de Servidores A', role: 'Servidor de Desarrollo Central', dept: 'Operaciones', since: '10 dic 2023', email: 'ops@enterprise.com' },
     location: 'Laboratorio',
-    value: '$6,299',
+    value: '$26.800.000',
     lastAudit: '10 dic 2023',
     serial: 'DE-PREC-7960',
     purchaseDate: '10 dic 2023',
@@ -200,7 +200,7 @@ const DEFAULT_ASSETS = [
       { icon: 'hard_drive', label: 'Almacenamiento', value: '2TB NVMe SSD + 10TB HDD Enterprise' },
     ],
     warranty: { days: 600, pct: 80, label: 'Soporte ProSupport Plus Dell de 3 años', start: 'dic 2023', end: 'dic 2026', status: 'Active' },
-    financial: { purchase: '$6,299', book: '$4,900', depreciation: '22.2%', acquired: 'Adquisición de TI' },
+    financial: { purchase: '$26.800.000', book: '$21.000.000', depreciation: '22.2%', acquired: 'Adquisición de TI' },
     history: [
       { action: 'Desplegado en Servidor Central', date: '10 dic 2023', by: 'Admin de Red', type: 'provision' }
     ],
@@ -209,11 +209,11 @@ const DEFAULT_ASSETS = [
 ];
 
 const DEFAULT_TICKETS = [
-  { id: 'TKT-8902', assetId: 'AST-0854', assetName: 'ThinkPad X1 Carbon', type: 'Reparación de Teclado', severity: 'Media', tech: 'Juan Pérez', cost: '$120.00', status: 'Pending', date: '25 jun 2026' },
+  { id: 'TKT-8902', assetId: 'AST-0854', assetName: 'ThinkPad X1 Carbon', type: 'Reparación de Teclado', severity: 'Media', tech: 'Juan Pérez', cost: '$120.000', status: 'Pending', date: '25 jun 2026' },
   { id: 'TKT-8891', assetId: 'AST-1042', assetName: 'MacBook Pro 16" M2 Max', type: 'Reemplazo de Batería', severity: 'Alta', tech: 'Carlos Gómez', cost: '$0 (Garantía)', status: 'Resolved', date: '20 jun 2026' },
   { id: 'TKT-8874', assetId: 'AST-3102', assetName: 'Cisco Meraki MR46 AP', type: 'Fallo de Conexión / Firmware', severity: 'Crítica', tech: 'Equipo de Red', cost: 'N/A', status: 'Resolved', date: '15 jun 2026' },
-  { id: 'TKT-8910', assetId: 'AST-6029', assetName: 'Dell Precision 7960', type: 'Fallo de Fuente de Poder', severity: 'Crítica', tech: 'Marta Rivas', cost: '$450.00', status: 'In Progress', date: '26 jun 2026' },
-  { id: 'TKT-8912', assetId: 'AST-5182', assetName: 'iPhone 15 Pro', type: 'Pantalla Rota', severity: 'Baja', tech: 'Soporte Externo', cost: '$250.00', status: 'Pending', date: '26 jun 2026' },
+  { id: 'TKT-8910', assetId: 'AST-6029', assetName: 'Dell Precision 7960', type: 'Fallo de Fuente de Poder', severity: 'Crítica', tech: 'Marta Rivas', cost: '$1.900.000', status: 'In Progress', date: '26 jun 2026' },
+  { id: 'TKT-8912', assetId: 'AST-5182', assetName: 'iPhone 15 Pro', type: 'Pantalla Rota', severity: 'Baja', tech: 'Soporte Externo', cost: '$1.000.000', status: 'Pending', date: '26 jun 2026' },
 ];
 
 const DEFAULT_LOGS = [

@@ -142,7 +142,9 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       assignee: null,
       assigneeDetail: null,
       location: location || 'Laboratorio',
-      value: value ? (value.startsWith('$') ? value : `$${value}`) : '$1,000',
+      value: value 
+        ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
+        : '$4.500.000',
       lastAudit: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
       serial: serial || 'S/N-UNKNOWN',
       purchaseDate: purchaseDate || new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -152,7 +154,16 @@ app.post('/api/assets', requireAuth, async (req, res) => {
         { icon: 'hard_drive',      label: 'Almacenamiento',   value: '512 GB SSD', pct: 10 },
       ],
       warranty: { days: 365, pct: 100, label: 'Garantía Estándar de Fábrica', start: 'ene 2026', end: 'ene 2027', status: 'Active' },
-      financial: { purchase: value || '$1,000', book: value || '$1,000', depreciation: '0%', acquired: 'Adquisición de TI' },
+      financial: { 
+        purchase: value 
+          ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
+          : '$4.500.000',
+        book: value 
+          ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
+          : '$4.500.000',
+        depreciation: '0%', 
+        acquired: 'Adquisición de TI' 
+      },
       history: [
         { action: 'Ingreso al Catálogo', date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }), by: 'Admin de Sistema', type: 'provision' }
       ],
@@ -238,7 +249,9 @@ app.post('/api/tickets', requireAuth, async (req, res) => {
       type,
       severity: severity || 'Media',
       tech: tech || 'Por asignar',
-      cost: cost ? (cost.startsWith('$') ? cost : `$${cost}`) : 'N/A',
+      cost: cost 
+        ? (cost.startsWith('$') ? cost : (cost === '0' || cost === '0.00' ? '$0 (Garantía)' : `$${parseFloat(cost).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)) 
+        : 'N/A',
       status: 'Pending',
       date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
     };

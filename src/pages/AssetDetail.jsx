@@ -517,7 +517,7 @@ export default function AssetDetail() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase">Costo Estimado ($)</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase">Costo Estimado (COP)</label>
                 <input
                   type="number"
                   placeholder="Ej. 100"

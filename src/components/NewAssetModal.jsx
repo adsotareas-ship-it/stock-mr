@@ -148,7 +148,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición ($)</label>
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP)</label>
               <input
                 type="number"
                 className="input-premium w-full px-3 py-2 text-[13px]"

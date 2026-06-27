@@ -16,7 +16,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
       setName(asset.name || '');
       setCategory(asset.category || 'Laptop');
       setSerial(asset.serial || '');
-      setValue(asset.value ? asset.value.replace(/[^0-9.]/g, '') : '');
+      setValue(asset.value ? asset.value.replace(/[^0-9]/g, '') : '');
       setLocation(asset.location || 'Sede — NY');
       setSub(asset.sub || '');
       setError('');
@@ -36,7 +36,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
         category,
         sub: sub || `${category} Corporativo`,
         serial: serial || undefined,
-        value: value ? `$${parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : undefined,
+        value: value ? `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : undefined,
         location,
       };
 
@@ -161,7 +161,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición ($)</label>
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP)</label>
               <input
                 type="number"
                 className="input-premium w-full px-3 py-2 text-[13px]"

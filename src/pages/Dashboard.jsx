@@ -50,7 +50,7 @@ export default function Dashboard() {
 
   const formattedValue = totalValueNum >= 1000000 
     ? `$${(totalValueNum / 1000000).toFixed(2)}M` 
-    : `$${totalValueNum.toLocaleString('en-US')}`;
+    : `$${totalValueNum.toLocaleString('es-CO')}`;
 
   const stats = [
     {
