@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - Stock Mr.</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-surface-variant": "#c6c6cd",
+                "on-surface": "#e0e3e5",
+                "surface-bright": "#363a3b",
+                "primary-fixed": "#dae2fd",
+                "on-tertiary": "#213145",
+                "error-container": "#93000a",
+                "outline-variant": "#45464d",
+                "tertiary": "#b7c8e1",
+                "tertiary-fixed-dim": "#b7c8e1",
+                "surface-tint": "#bec6e0",
+                "secondary-container": "#0566d9",
+                "on-secondary-fixed": "#001a42",
+                "surface": "#101415",
+                "surface-container-low": "#191c1e",
+                "on-primary-container": "#798098",
+                "surface-dim": "#101415",
+                "on-tertiary-container": "#728299",
+                "on-tertiary-fixed-variant": "#38485d",
+                "inverse-primary": "#565e74",
+                "tertiary-fixed": "#d3e4fe",
+                "primary": "#bec6e0",
+                "primary-container": "#0f172a",
+                "on-secondary-container": "#e6ecff",
+                "surface-container-lowest": "#0b0f10",
+                "secondary-fixed": "#d8e2ff",
+                "inverse-on-surface": "#2d3133",
+                "surface-container-highest": "#323537",
+                "primary-fixed-dim": "#bec6e0",
+                "tertiary-container": "#06182b",
+                "surface-variant": "#323537",
+                "error": "#ffb4ab",
+                "on-tertiary-fixed": "#0b1c30",
+                "secondary-fixed-dim": "#adc6ff",
+                "secondary": "#adc6ff",
+                "on-error": "#690005",
+                "on-error-container": "#ffdad6",
+                "outline": "#909097",
+                "background": "#101415",
+                "on-primary-fixed-variant": "#3f465c",
+                "surface-container-high": "#272a2c",
+                "surface-container": "#1d2022",
+                "on-secondary": "#002e6a",
+                "on-primary": "#283044",
+                "on-background": "#e0e3e5",
+                "inverse-surface": "#e0e3e5",
+                "on-primary-fixed": "#131b2e",
+                "on-secondary-fixed-variant": "#004395"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "stack-sm": "8px",
+                "sidebar-width": "280px",
+                "gutter": "24px",
+                "container-max": "1440px",
+                "stack-lg": "32px",
+                "margin-page": "40px",
+                "stack-md": "16px"
+        },
+        "fontFamily": {
+                "label-md": [
+                        "JetBrains Mono"
+                ],
+                "headline-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Hanken Grotesk"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "body-lg": [
+                        "Hanken Grotesk"
+                ],
+                "display-lg": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "JetBrains Mono"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ]
+        },
+        "fontSize": {
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.04em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        /* Custom glowing background effect for high-end feel */
+        .ambient-glow {
+            background: radial-gradient(circle at 50% -20%, rgba(21, 128, 61, 0.08) 0%, rgba(249, 250, 251, 1) 70%);
+        }
+        
+        /* Subtle grid pattern for data density vibe */
+        .tech-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        }
+
+        /* Glassmorphism card specifics */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input autofill override */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #f9fafb inset !important;
+            -webkit-text-fill-color: #111827 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-body-md antialiased ambient-glow tech-grid">
+<!-- Main Canvas Content -->
+<main class="flex-grow flex items-center justify-center p-6 relative z-10">
+<!-- Login Card -->
+<div class="glass-card w-full max-w-[440px] rounded-xl p-8 flex flex-col gap-stack-lg relative overflow-hidden group">
+<!-- Header / Logo -->
+<div class="flex flex-col items-center text-center gap-stack-sm">
+<div class="w-16 h-16 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200 mb-2 shadow-sm">
+<span class="material-symbols-outlined text-green-700" style="font-variation-settings: 'FILL' 1; font-size: 32px;">inventory_2</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-gray-900 tracking-tight font-bold">Stock Mr.</h1>
+<p class="font-body-md text-body-md text-gray-500">Secure Enterprise Authentication</p>
+</div>
+<!-- Standard Login Form -->
+<form action="#" class="flex flex-col gap-stack-md relative z-10" method="POST">
+<!-- Email Input Group -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-gray-700 ml-1" for="email">Corporate Email</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-gray-400 select-none pointer-events-none">mail</span>
+<input class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg pl-11 pr-4 font-body-md text-body-md text-gray-900 focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all placeholder:text-gray-400" id="email" name="email" placeholder="admin@enterprise.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Input Group -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end ml-1">
+<label class="font-label-sm text-label-sm text-gray-700" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-green-700 hover:text-green-800 transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-gray-400 select-none pointer-events-none">lock</span>
+<input class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg pl-11 pr-11 font-body-md text-body-md text-gray-900 focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all placeholder:text-gray-400" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined select-none">visibility</span>
+</button>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="mt-4 w-full h-12 bg-green-700 text-white rounded-lg font-label-md text-label-md uppercase tracking-wider font-bold hover:bg-green-800 transition-all duration-200 shadow-md flex justify-center items-center gap-2" type="submit">
+<span>Authenticate</span>
+<span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="flex items-center gap-4 py-2 relative z-10">
+<div class="h-px bg-gray-200 flex-grow"></div>
+<span class="font-label-sm text-label-sm text-gray-500 uppercase tracking-widest">Corporate Access</span>
+<div class="h-px bg-gray-200 flex-grow"></div>
+</div>
+<!-- SSO Buttons -->
+<div class="flex flex-col gap-3 relative z-10">
+<button class="w-full h-12 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm" type="button">
+<!-- Generic domain icon for Azure/Microsoft -->
+<span class="material-symbols-outlined text-[#00a4ef]">grid_view</span>
+<span class="font-label-md text-label-md text-gray-800">Continue with Azure AD</span>
+</button>
+<button class="w-full h-12 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm" type="button">
+<!-- Generic icon for Google Workspace -->
+<span class="material-symbols-outlined text-green-700">work</span>
+<span class="font-label-md text-label-md text-gray-800">Continue with Google Workspace</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white text-gray-500 relative z-10">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-page w-full max-w-container-max mx-auto gap-4">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-gray-800">Stock Mr.</span>
+<span class="font-label-sm text-label-sm text-gray-500">© 2024 Stock Mr. IT Asset Management. All rights reserved.</span>
+</div>
+<nav class="flex gap-6">
+<a class="font-label-sm text-label-sm text-gray-500 hover:text-gray-800 transition-colors hover:underline decoration-green-700" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-gray-500 hover:text-gray-800 transition-colors hover:underline decoration-green-700" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-gray-500 hover:text-gray-800 transition-colors hover:underline decoration-green-700" href="#">API Status</a>
+</nav>
+</div>
+</footer>
+</body></html>

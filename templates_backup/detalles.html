@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock Mr - Asset Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-bright": "#f7f9fb",
+                "on-tertiary": "#ffffff",
+                "inverse-primary": "#79db8d",
+                "on-tertiary-fixed-variant": "#3c475a",
+                "secondary": "#006d36",
+                "primary-container": "#15803d",
+                "primary-fixed": "#95f8a7",
+                "secondary-container": "#6dfe9c",
+                "tertiary": "#4d586c",
+                "on-primary-fixed-variant": "#005323",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#00210c",
+                "inverse-on-surface": "#eff1f3",
+                "surface-variant": "#e0e3e5",
+                "on-surface-variant": "#3f493f",
+                "surface-container": "#eceef0",
+                "on-tertiary-fixed": "#111c2d",
+                "surface-container-highest": "#e0e3e5",
+                "background": "#f7f9fb",
+                "surface-container-low": "#f2f4f6",
+                "outline-variant": "#becabc",
+                "error-container": "#ffdad6",
+                "primary-fixed-dim": "#79db8d",
+                "on-error-container": "#93000a",
+                "surface": "#f7f9fb",
+                "on-secondary-container": "#007439",
+                "on-error": "#ffffff",
+                "inverse-surface": "#2d3133",
+                "tertiary-container": "#657085",
+                "surface-dim": "#d8dadc",
+                "on-secondary-fixed-variant": "#005227",
+                "on-surface": "#191c1e",
+                "surface-tint": "#006d30",
+                "secondary-fixed-dim": "#4de082",
+                "on-primary": "#ffffff",
+                "error": "#ba1a1a",
+                "primary": "#00652c",
+                "on-background": "#191c1e",
+                "outline": "#6f7a6e",
+                "on-tertiary-container": "#f1f4ff",
+                "on-primary-container": "#d3ffd5",
+                "secondary-fixed": "#6dfe9c",
+                "on-primary-fixed": "#00210a",
+                "surface-container-high": "#e6e8ea",
+                "tertiary-fixed": "#d8e3fb",
+                "tertiary-fixed-dim": "#bcc7de",
+                "on-secondary": "#ffffff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "margin-desktop": "64px",
+                "container-max": "1280px",
+                "margin-tablet": "32px",
+                "margin-mobile": "20px",
+                "unit": "8px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "display-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "body-lg": [
+                        "Hanken Grotesk"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "display-lg": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ],
+                "label-md": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Hanken Grotesk"
+                ]
+        },
+        "fontSize": {
+                "display-lg-mobile": [
+                        "36px",
+                        {
+                                "lineHeight": "44px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom Scrollbar for sleek dark mode */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #becabc;
+        }
+        
+        /* Card Hover Glow */
+        .glow-card {
+            transition: all 0.3s ease;
+        }
+        .glow-card:hover {
+            border-color: rgba(109, 254, 156, 0.3);
+            box-shadow: 0 0 15px rgba(109, 254, 156, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex selection:bg-secondary/30 selection:text-secondary">
+<!-- JSON: SideNavBar -->
+<nav class="hidden md:flex w-[280px] h-full fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant shadow-sm flex-col py-[16px] z-40">
+<!-- Header -->
+<div class="px-6 pb-[32px] border-b border-outline-variant/30 mb-[16px]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="corporate_fare">corporate_fare</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Stock Mr</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">IT Asset Command</p>
+</div>
+</div>
+<button class="mt-[16px] w-full py-2.5 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(109,254,156,0.15)]">
+<span class="material-symbols-outlined" data-icon="add" style="font-size: 18px;">add</span>
+                Add Asset
+            </button>
+</div>
+<!-- Main Nav -->
+<div class="flex-1 px-4 flex flex-col gap-1 overflow-y-auto">
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="border-l-2 border-primary bg-gradient-to-r from-primary/10 to-transparent text-primary font-bold flex items-center px-4 py-3 rounded-r-lg transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined fill" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Assets</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="font-label-md text-label-md">Maintenance</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-label-md text-label-md">Vendors</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-label-md text-label-md">Audit</span>
+</a>
+</div>
+<!-- Footer Nav -->
+<div class="px-4 pt-[16px] border-t border-outline-variant/30 mt-auto flex flex-col gap-1">
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 rounded-lg hover:bg-surface-container-high transition-all duration-200 ease-in-out gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<main class="flex-1 md:ml-[280px] flex flex-col min-h-screen relative overflow-hidden">
+<!-- Subtle background texture/gradient -->
+<div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-background to-background z-0"></div>
+<!-- JSON: TopNavBar (Mobile only for Destination, but hiding as per shell logic if deeply nested, keeping it simple as a functional header here for layout completeness, acting as page header) -->
+<header class="w-full h-16 bg-surface-container/80 backdrop-blur-md border-b border-outline-variant/50 flex justify-between items-center px-gutter sticky top-0 z-30 shadow-sm">
+<div class="flex items-center gap-3">
+<button class="md:hidden text-on-surface-variant p-2 -ml-2 rounded-lg hover:bg-surface-container-high">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors" href="#">Assets</a>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-bold">MBP-14-2023-ENG-04</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/50 ml-2">
+<img alt="Executive User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of an executive in a well-lit, modern corporate office environment, high fidelity, 8k resolution, cinematic lighting, corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbjtBsXOuZbO7v1aNJ3-VWdpBTBkA_ElcPZJNpetpL8xxMoVA4YcI8hkNnQ0w9XVFpf9q-ZJMNa6Jnq-cSCQXV4lXz53Hxsr1hScKygbEP-YA3oP0ZsV3WXCJeCI6B0UHUF__KbytBBz8sqSNu_gyPcPg2KY4u7AFIAzgICS-lji4poGOa5DldE_Cl3Uc-zev-d-6tD7rc2AsBRKxEP0uqsgrtdHeTf0vcp8j0YZIi8MiFiFKvULZx"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 p-gutter md:p-margin-desktop z-10 max-w-container-max mx-auto w-full flex flex-col gap-[32px] pb-24">
+<!-- Asset Header Block -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm glow-card">
+<div class="flex items-start gap-6">
+<div class="w-24 h-24 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant/50 overflow-hidden shrink-0 relative group">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Laptop" class="w-full h-full object-cover p-2" data-alt="A sleek, high-end metallic space grey laptop closed, floating in a dark minimal void with subtle blue rim lighting highlighting its engineered precision, 8k render, corporate modern tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfSYIIwjscxxpweJGhwNHuyzjOkoJlhgDeUb-OUgpsge5lPN03ezLnnVlrcDIgUVBe-W1Xca8pswMqXRyvSVaapcHPfS0VfNza5ZRaiyDeETFkkqPY9_LYZi_lj_1naGt0UPzNyNX-SnwtM_4VEs7vn6R0O4pprw0Wdyl3FG39e3n-LJcScDl16YnZqWQ9CFqPECtpgOebuTNHQm0GjOGhIUwNl2q1HHguPTy4JcdJrjVUtYIzxZWe"/>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="px-2.5 py-1 rounded bg-secondary/10 border border-secondary/20 text-secondary font-label-sm text-label-sm uppercase flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_5px_#6dfe9c]"></span>
+                                Active
+                            </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant border border-outline-variant/50 px-2 py-0.5 rounded">Hardware</span>
+</div>
+<h2 class="font-display-lg text-display-lg md:text-[40px] md:leading-[48px] text-on-background tracking-tight">MacBook Pro 14" M3 Max</h2>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="tag">tag</span>
+                            S/N: C02XG392JGH7
+                        </p>
+</div>
+</div>
+<!-- Primary Actions -->
+<div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/50 hover:border-primary/50 hover:bg-surface-variant rounded-lg text-on-surface font-label-md text-label-md transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="build_circle">build_circle</span>
+                        Mark Repair
+                    </button>
+<button class="flex-1 md:flex-none px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/50 hover:border-primary/50 hover:bg-surface-variant rounded-lg text-on-surface font-label-md text-label-md transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+                        Reassign
+                    </button>
+<button class="flex-1 md:flex-none px-4 py-2.5 bg-primary text-on-primary hover:bg-primary-container rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(0,101,44,0.2)]">
+<span class="material-symbols-outlined" data-icon="summarize">summarize</span>
+                        Report
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Technical Specs (Spans 8 cols) -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col glow-card relative overflow-hidden shadow-sm">
+<!-- Subtle background logo/icon water mark -->
+<span class="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-primary/5 rotate-12 select-none" data-icon="memory">memory</span>
+<div class="flex justify-between items-center mb-6 relative z-10">
+<h3 class="font-headline-md text-headline-md text-primary">Technical Specifications</h3>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit_document">edit_document</span>
+</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+<!-- Spec Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low/50 border border-outline-variant/30">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" data-icon="developer_board">developer_board</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Processor (CPU)</span>
+<span class="block font-body-lg text-body-lg text-on-surface">Apple M3 Max (16-core CPU)</span>
+</div>
+</div>
+<!-- Spec Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low/50 border border-outline-variant/30">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" data-icon="memory">memory</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Memory (RAM)</span>
+<span class="block font-body-lg text-body-lg text-on-surface">64GB Unified Memory</span>
+<div class="mt-2 w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-full"></div>
+</div>
+</div>
+</div>
+<!-- Spec Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low/50 border border-outline-variant/30">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" data-icon="hard_drive">hard_drive</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Storage</span>
+<span class="block font-body-lg text-body-lg text-on-surface">2TB NVMe SSD</span>
+<div class="flex justify-between items-center mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span>Used: 840GB</span>
+<span>42%</span>
+</div>
+<div class="mt-1 w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[42%]"></div>
+</div>
+</div>
+</div>
+<!-- Spec Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low/50 border border-outline-variant/30">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" data-icon="wifi_tethering">wifi_tethering</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Network &amp; MAC</span>
+<span class="block font-label-md text-label-md text-on-surface font-mono tracking-wider bg-surface-container px-2 py-1 rounded inline-block">00:1A:2B:3C:4D:5E</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Warranty & Status (Spans 4 cols) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Warranty Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col glow-card relative overflow-hidden shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Warranty Status</h3>
+<span class="material-symbols-outlined text-secondary" data-icon="verified">verified</span>
+</div>
+<div class="flex items-end gap-2 mb-2">
+<span class="font-display-lg text-display-lg md:text-[56px] md:leading-[64px] text-secondary">412</span>
+<span class="font-body-md text-body-md text-on-surface-variant pb-2">days left</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4">AppleCare+ Enterprise Level 2</p>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mb-2 overflow-hidden">
+<div class="bg-gradient-to-r from-secondary to-primary h-full rounded-full" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant/70">
+<span>Started: Jan 2023</span>
+<span>Ends: Jan 2026</span>
+</div>
+</div>
+<!-- Financial/Cost Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col glow-card h-full shadow-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Asset Value</h3>
+<div class="flex items-center justify-between mb-2">
+<span class="font-body-md text-body-md text-on-surface">Purchase Price</span>
+<span class="font-label-md text-label-md text-on-surface font-mono">$3,899.00</span>
+</div>
+<div class="flex items-center justify-between mb-4">
+<span class="font-body-md text-body-md text-on-surface">Current Book Value</span>
+<span class="font-label-md text-label-md text-secondary font-mono">$2,450.00</span>
+</div>
+<!-- Decorative Sparkline -->
+<div class="mt-auto pt-4 border-t border-outline-variant/30">
+<div class="flex items-end gap-1 h-12 w-full opacity-60">
+<div class="w-full bg-secondary/20 h-[100%] rounded-t-sm"></div>
+<div class="w-full bg-secondary/30 h-[80%] rounded-t-sm"></div>
+<div class="w-full bg-secondary/40 h-[70%] rounded-t-sm"></div>
+<div class="w-full bg-secondary/60 h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-secondary h-[45%] rounded-t-sm relative">
+<div class="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Assignment & History Logs (Spans 12 cols, split internally) -->
+<div class="md:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Current Assignment -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col glow-card shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-background">Current Assignment</h3>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant/50 font-label-sm text-label-sm text-on-surface-variant">Dept: Engineering</span>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 mb-6">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/30 shrink-0">
+<img alt="Assignee Profile" class="w-full h-full object-cover" data-alt="A portrait of a software engineer looking confident, wearing a smart casual dark shirt, high tech modern office background with blue accent lighting, shallow depth of field, 8k." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs_OBcma1Pz3S8ELZog54EdsvnIGs7vy9wK4ampIFHS_xYQTK0SnB9p7MNIDOvtEjZStmd5PKKfS5g-Msi1-c8vt26qIc0Z758Kw10UOXJiu_Xe_VcjADk21Q9cQ_pDRZQFlBbQaXL6I2b89VS-cuZRFGSVKCzK1S7_8olhZGonUBOmfj3zsgumTzdH2wcm38ka_bw6AoEJp_X-ESprf2NYnXZ5KsaTiTLc7WPqLCuSrCXyTRU-ZDr"/>
+</div>
+<div class="flex-1">
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">Sarah Jenkins</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sr. Frontend Developer</p>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-secondary bg-surface-container rounded-lg border border-outline-variant/50 transition-colors">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</button>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-4 border-b border-outline-variant/30 pb-2">Assignment History</h4>
+<div class="flex flex-col gap-4 relative">
+<!-- Timeline line -->
+<div class="absolute left-[11px] top-2 bottom-2 w-[2px] bg-outline-variant/30 z-0"></div>
+<div class="flex gap-4 relative z-10">
+<div class="w-6 h-6 rounded-full bg-primary-container border-2 border-surface-container-lowest flex items-center justify-center shrink-0 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-on-primary"></span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Assigned to Sarah Jenkins</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Oct 12, 2023 • System Admin</p>
+</div>
+</div>
+<div class="flex gap-4 relative z-10 opacity-70">
+<div class="w-6 h-6 rounded-full bg-surface-container-high border-2 border-surface-container-lowest flex items-center justify-center shrink-0 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Returned from Maintenance</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Oct 10, 2023 • IT Dept</p>
+</div>
+</div>
+<div class="flex gap-4 relative z-10 opacity-50">
+<div class="w-6 h-6 rounded-full bg-surface-container-high border-2 border-surface-container-lowest flex items-center justify-center shrink-0 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Initial Provisioning</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Jan 05, 2023 • Auto-deploy</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Maintenance Log -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 flex flex-col glow-card overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low/50">
+<h3 class="font-headline-md text-headline-md text-on-background flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="plumbing">plumbing</span>
+                                Maintenance Log
+                            </h3>
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors uppercase">View All</button>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container/50 border-b border-outline-variant/30">
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider font-semibold">Date</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider font-semibold">Type</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider font-semibold">Status</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant/80 uppercase tracking-wider font-semibold">Cost</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-6 text-on-surface">Oct 08, 2023</td>
+<td class="py-4 px-6 text-on-surface">Battery Replacement</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                                Resolved
+                                            </span>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono">$0 (Warranty)</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-6 text-on-surface">Jun 15, 2023</td>
+<td class="py-4 px-6 text-on-surface">OS Image Update</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                                Completed
+                                            </span>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono">N/A</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-6 text-on-surface">Feb 20, 2023</td>
+<td class="py-4 px-6 text-on-surface">Screen Calibration</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                                Completed
+                                            </span>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono">N/A</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
