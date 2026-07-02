@@ -363,7 +363,7 @@ export default function AssetDetail() {
           <div className="flex items-start gap-5">
             <div
               onClick={() => setShowImageZoom(true)}
-              className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 cursor-pointer hover:scale-105 transition-all duration-200 bg-white"
+              className="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 cursor-pointer hover:scale-105 transition-all duration-200 bg-white"
               style={{
                 border: '1px solid rgba(124, 58, 237, 0.2)',
                 boxShadow: '0 4px 16px rgba(124, 58, 237, 0.1)',
@@ -1120,7 +1120,7 @@ export default function AssetDetail() {
             <img
               src={getAssetImage(asset)}
               alt={asset.name}
-              className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl bg-white p-3 border border-slate-100"
+              className="w-full max-w-[500px] md:max-w-[700px] lg:max-w-[900px] max-h-[70vh] object-contain rounded-2xl shadow-2xl bg-white p-3 border border-slate-100"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
