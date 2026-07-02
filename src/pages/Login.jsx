@@ -9,6 +9,7 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -203,10 +204,102 @@ export default function Login() {
 
           <p className="text-center text-[11px] text-slate-400">
             Protegido por cifrado de nivel empresarial.{' '}
-            <span className="text-violet-700 hover:text-violet-800 cursor-pointer transition-colors">Política de Privacidad</span>
+            <span 
+              onClick={() => setShowPrivacyModal(true)} 
+              className="text-violet-700 hover:text-violet-800 cursor-pointer font-medium underline underline-offset-2 transition-colors"
+            >
+              Política de Privacidad
+            </span>
           </p>
         </div>
       </div>
+
+      {/* Privacy and Security Modal */}
+      {showPrivacyModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+          style={{ backgroundColor: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)' }}
+        >
+          {/* Modal Content Card */}
+          <div 
+            className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 flex flex-col gap-5 animate-scale-up"
+            style={{ maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid #f1f5f9' }}>
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)' }}
+                >
+                  <span className="material-symbols-outlined font-bold text-violet-700" style={{ fontSize: '18px' }}>shield</span>
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-slate-800 leading-tight">Política de Privacidad y Seguridad</h3>
+                  <p className="text-[10.5px] text-slate-400">Protección de Datos Sma Latb Stock</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowPrivacyModal(false)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
+              </button>
+            </div>
+
+            {/* Info Body */}
+            <div className="flex flex-col gap-4 text-[12.5px] text-slate-500 leading-relaxed">
+              <p>
+                Este sistema ha sido diseñado con estrictos estándares de seguridad tecnológica para la administración del inventario de TI de su organización.
+              </p>
+
+              {/* Point 1: Encryption */}
+              <div className="flex gap-3">
+                <span className="material-symbols-outlined text-violet-600 mt-0.5 flex-shrink-0" style={{ fontSize: '18px' }}>vpn_key</span>
+                <div>
+                  <h4 className="font-bold text-slate-700 text-[13px] mb-0.5">Cifrado de Credenciales y Sesiones</h4>
+                  <p>
+                    Las contraseñas de los usuarios administradores se almacenan de forma irreversible utilizando el algoritmo hash <strong>bcryptjs</strong>. Las sesiones activas de administración se validan mediante tokens <strong>JSON Web Tokens (JWT)</strong> firmados digitalmente.
+                  </p>
+                </div>
+              </div>
+
+              {/* Point 2: Data Protection */}
+              <div className="flex gap-3">
+                <span className="material-symbols-outlined text-teal-600 mt-0.5 flex-shrink-0" style={{ fontSize: '18px' }}>lock</span>
+                <div>
+                  <h4 className="font-bold text-slate-700 text-[13px] mb-0.5">Cumplimiento de Protección de Datos (Habeas Data)</h4>
+                  <p>
+                    En concordancia con la <strong>Ley 1581</strong> de protección de datos personales, la información de los usuarios (nombres, correos electrónicos corporativos, auditorías asignadas) se recolecta exclusivamente para fines administrativos de la empresa. No se comparte con terceros ni se transfiere fuera del servidor de la organización.
+                  </p>
+                </div>
+              </div>
+
+              {/* Point 3: Log Audits */}
+              <div className="flex gap-3">
+                <span className="material-symbols-outlined text-amber-600 mt-0.5 flex-shrink-0" style={{ fontSize: '18px' }}>history</span>
+                <div>
+                  <h4 className="font-bold text-slate-700 text-[13px] mb-0.5">Trazabilidad y Bitácora</h4>
+                  <p>
+                    Para garantizar la transparencia y seguridad de los activos de la compañía, cada modificación, baja, asignación o mantenimiento queda registrada en una bitácora de auditoría histórica inalterable que asocia la acción al correo del administrador responsable.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer / Accept button */}
+            <div className="flex items-center justify-between pt-3 mt-1" style={{ borderTop: '1px solid #f1f5f9' }}>
+              <span className="text-[10px] text-slate-400">Versión de seguridad: v3.2.1-prod</span>
+              <button 
+                onClick={() => setShowPrivacyModal(false)}
+                className="btn-electric py-1.5 px-4 text-[12px] font-semibold"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400">
         © 2024 Sma Latb Stock. Gestión de Activos IT · v3.2.1
