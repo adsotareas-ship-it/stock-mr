@@ -97,19 +97,21 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Categoría</label>
               <div className="relative">
-                <select
-                  className="input-premium w-full px-3 py-2 text-[13px] appearance-none cursor-pointer"
+                <input
+                  list="category-options"
+                  className="input-premium w-full px-3 py-2 text-[13px]"
+                  placeholder="Selecciona o escribe una categoría"
                   value={category}
                   onChange={e => setCategory(e.target.value)}
-                >
-                  <option value="Laptop">Laptop</option>
-                  <option value="Display">Pantalla / Monitor</option>
-                  <option value="Networking">Redes</option>
-                  <option value="Server">Servidor</option>
-                  <option value="Tablet">Tablet</option>
-                  <option value="Mobile">Móvil</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" style={{ fontSize: '15px' }}>expand_more</span>
+                />
+                <datalist id="category-options">
+                  <option value="Laptop" />
+                  <option value="Display" />
+                  <option value="Networking" />
+                  <option value="Server" />
+                  <option value="Tablet" />
+                  <option value="Mobile" />
+                </datalist>
               </div>
             </div>
 
