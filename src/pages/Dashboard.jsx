@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function Dashboard() {
   const [chartView, setChartView] = useState('category');
@@ -162,21 +164,181 @@ export default function Dashboard() {
     }
   };
 
-  const handleExportCSV = () => {
+  const handleExportPDF = () => {
     if (assets.length === 0) return;
-    const headers = ['ID', 'Nombre', 'Subtítulo', 'Categoría', 'Estado', 'Asignatario', 'Ubicación', 'Valor', 'Serie', 'Fecha Compra'];
-    const rows = assets.map(a => [
-      a.id, a.name, a.sub, a.category, a.status, a.assignee || 'Disponible', a.location, a.value, a.serial, a.purchaseDate
-    ]);
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
-      + [headers.join(','), ...rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `inventario_sma_latb_stock_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('es-CO', { 
+      day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Bogota' 
+    });
+    const timeStr = now.toLocaleTimeString('es-CO', { 
+      hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Bogota' 
+    });
+
+    // ── Header background ──────────────────────────────────────────
+    doc.setFillColor(18, 10, 50);
+    doc.rect(0, 0, pageW, 38, 'F');
+
+    // Gradient accent bar (top edge)
+    const accentColors = [[124, 58, 237], [6, 182, 212], [167, 139, 250]];
+    const segW = pageW / accentColors.length;
+    accentColors.forEach(([r, g, b], i) => {
+      doc.setFillColor(r, g, b);
+      doc.rect(i * segW, 0, segW + 1, 2, 'F');
+    });
+
+    // Company name
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.text('SMA LATB STOCK', 14, 16);
+
+    // Subtitle
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(167, 139, 250);
+    doc.text('Sistema de Gestión de Inventario Tecnológico', 14, 23);
+
+    // Report title (right side)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(255, 255, 255);
+    doc.text('REPORTE EJECUTIVO DE INVENTARIO', pageW - 14, 15, { align: 'right' });
+
+    // Date/time (right side)
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generado: ${dateStr} · ${timeStr.toUpperCase()}`, pageW - 14, 22, { align: 'right' });
+    doc.text(`Total de Activos: ${assets.length}`, pageW - 14, 28, { align: 'right' });
+
+    // ── KPI summary cards ──────────────────────────────────────────
+    const kpis = [
+      { label: 'Total Activos',     value: String(totalAssets),    color: [124, 58, 237] },
+      { label: 'Activos Operativos', value: String(operativeAssets), color: [5, 150, 105] },
+      { label: 'En Mantenimiento',  value: String(inMaintenance),   color: [217, 119, 6] },
+      { label: 'Valor Portafolio',  value: formattedValue,          color: [99, 102, 241] },
+    ];
+
+    const cardW = (pageW - 28 - 9) / 4;
+    const cardY = 44;
+    kpis.forEach(({ label, value, color }, i) => {
+      const x = 14 + i * (cardW + 3);
+      // Card bg
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(x, cardY, cardW, 22, 3, 3, 'F');
+      // Left accent stripe
+      doc.setFillColor(...color);
+      doc.roundedRect(x, cardY, 3, 22, 1.5, 1.5, 'F');
+      // Value
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(...color);
+      doc.text(value, x + cardW / 2 + 1.5, cardY + 10, { align: 'center' });
+      // Label
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text(label.toUpperCase(), x + cardW / 2 + 1.5, cardY + 17, { align: 'center' });
+    });
+
+    // ── Section heading ────────────────────────────────────────────
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(30, 41, 59);
+    doc.text('DETALLE COMPLETO DE ACTIVOS', 14, 76);
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(14, 78, 80, 78);
+
+    // ── Assets table ───────────────────────────────────────────────
+    const statusColor = (status) => {
+      if (status === 'Active')        return [5, 150, 105];
+      if (status === 'Maintenance')   return [217, 119, 6];
+      if (status === 'Decommissioned') return [220, 38, 38];
+      if (status === 'Available')     return [37, 99, 235];
+      return [100, 116, 139];
+    };
+    const statusLabel = (status) => {
+      if (status === 'Active')        return 'Activo';
+      if (status === 'Maintenance')   return 'Mantenimiento';
+      if (status === 'Decommissioned') return 'Baja';
+      if (status === 'Available')     return 'Disponible';
+      return status;
+    };
+
+    autoTable(doc, {
+      startY: 81,
+      margin: { left: 14, right: 14 },
+      head: [['#', 'ID', 'Nombre del Equipo', 'Categoría', 'Estado', 'Asignatario', 'Ubicación', 'Valor', 'N° Serie']],
+      body: assets.map((a, idx) => [
+        idx + 1,
+        a.id,
+        a.name,
+        a.category,
+        statusLabel(a.status),
+        a.assignee || 'Disponible',
+        a.location,
+        a.value,
+        a.serial || '—',
+      ]),
+      styles: {
+        fontSize: 8,
+        cellPadding: { top: 3.5, bottom: 3.5, left: 3, right: 3 },
+        font: 'helvetica',
+        textColor: [30, 41, 59],
+        lineColor: [226, 232, 240],
+        lineWidth: 0.2,
+        overflow: 'ellipsize',
+      },
+      headStyles: {
+        fillColor: [18, 10, 50],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 8,
+        cellPadding: { top: 4, bottom: 4, left: 3, right: 3 },
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
+      },
+      columnStyles: {
+        0:  { cellWidth: 8,  halign: 'center', textColor: [148, 163, 184] },
+        1:  { cellWidth: 22, fontStyle: 'bold', textColor: [124, 58, 237] },
+        2:  { cellWidth: 52 },
+        3:  { cellWidth: 30 },
+        4:  { cellWidth: 28, halign: 'center', fontStyle: 'bold' },
+        5:  { cellWidth: 36 },
+        6:  { cellWidth: 28 },
+        7:  { cellWidth: 22, halign: 'right', fontStyle: 'bold' },
+        8:  { cellWidth: 'auto' },
+      },
+      didParseCell(data) {
+        // Color-code the Status column
+        if (data.column.index === 4 && data.section === 'body') {
+          const raw = assets[data.row.index]?.status;
+          const [r, g, b] = statusColor(raw);
+          data.cell.styles.textColor = [r, g, b];
+        }
+      },
+      didDrawPage(data) {
+        // ── Footer on every page ──
+        const footerY = doc.internal.pageSize.getHeight() - 8;
+        doc.setFillColor(18, 10, 50);
+        doc.rect(0, footerY - 5, pageW, 16, 'F');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(148, 163, 184);
+        doc.text('Sma Latb Stock · Documento Confidencial · Uso Interno', 14, footerY + 2);
+        doc.text(
+          `Página ${doc.internal.getCurrentPageInfo().pageNumber} · ${dateStr}`,
+          pageW - 14, footerY + 2, { align: 'right' }
+        );
+      },
+    });
+
+    doc.save(`reporte_inventario_sma_latb_${now.toISOString().slice(0, 10)}.pdf`);
   };
 
   return (
@@ -210,8 +372,8 @@ export default function Dashboard() {
             <span className="dot-pulse" style={{ color: '#7c3aed', background: '#7c3aed' }} />
             <span className="text-[12px] font-semibold text-violet-800">Monitoreo en Vivo</span>
           </div>
-          <button onClick={handleExportCSV} className="btn-electric flex items-center gap-2 text-[13px]">
-            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>download</span>
+          <button onClick={handleExportPDF} className="btn-electric flex items-center gap-2 text-[13px]">
+            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>picture_as_pdf</span>
             Exportar Reporte
           </button>
         </div>
