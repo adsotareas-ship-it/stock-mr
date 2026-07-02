@@ -37,7 +37,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
         category,
         sub: sub || `${category} Corporativo`,
         serial: serial || undefined,
-        value: value ? `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : undefined,
+        value: value !== '' ? value : '0',
         location,
       };
 

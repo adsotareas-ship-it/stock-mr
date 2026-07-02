@@ -216,6 +216,25 @@ app.put('/api/assets/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
+
+    // If value is being updated, sync financial block too
+    if (updates.value !== undefined) {
+      const rawVal = updates.value;
+      const fmtVal = rawVal && rawVal !== '0' && rawVal !== '$0'
+        ? (String(rawVal).startsWith('$')
+            ? rawVal
+            : `$${parseFloat(rawVal).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)
+        : '$0';
+      updates.value = fmtVal;
+      updates.financial = {
+        ...(updates.financial || {}),
+        purchase: fmtVal,
+        book: fmtVal,
+        depreciation: updates.financial?.depreciation || '0%',
+        acquired: updates.financial?.acquired || 'Adquisición de TI',
+      };
+    }
+
     const updated = await db.updateAsset(id, updates);
     if (!updated) return res.status(404).json({ error: 'Asset not found' });
     res.json(updated);
