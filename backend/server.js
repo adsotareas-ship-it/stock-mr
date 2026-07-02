@@ -11,6 +11,13 @@ app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secure-secret-key-123456789';
+const getFormattedTime = () => {
+  const now = new Date();
+  const datePart = now.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+  const timePart = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
+  return `${datePart}, ${timePart.toUpperCase()}`;
+};
+
 
 // Rate Limiter to prevent Brute-Force Attacks on Login
 const loginAttempts = new Map();
@@ -96,7 +103,7 @@ app.put('/api/user', requireAuth, async (req, res) => {
       email: updated.email,
       action: 'Modificación',
       detail: `Configuración de perfil/credenciales del administrador actualizada.`,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: 'manage_accounts',
       iconColor: '#0d9488',
       iconBg: 'rgba(13,148,136,0.08)'
@@ -201,7 +208,7 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       email: 'admin@enterprise.com',
       action: 'Registro',
       detail: `Equipo AST- ${newAsset.id} (${newAsset.name}) registrado e importado al catálogo.`,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: 'add_box',
       iconColor: '#7c3aed',
       iconBg: 'rgba(124,58,237,0.08)'
@@ -257,7 +264,7 @@ app.delete('/api/assets/:id', requireAuth, async (req, res) => {
       email: 'admin@enterprise.com',
       action: 'Baja',
       detail: `Equipo ${deleted.id} (${deleted.name}) fue dado de baja y eliminado del catálogo.`,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: 'delete',
       iconColor: '#dc2626',
       iconBg: 'rgba(220,38,38,0.08)'
@@ -328,7 +335,7 @@ app.post('/api/tickets', requireAuth, async (req, res) => {
       email: 'it@enterprise.com',
       action: 'Mantenimiento',
       detail: `Activo ${assetId} (${assetName}) movido a mantenimiento por: ${type}.`,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: 'build',
       iconColor: '#d97706',
       iconBg: 'rgba(217,119,6,0.08)'
@@ -359,7 +366,7 @@ app.post('/api/logs', requireAuth, async (req, res) => {
       email: email || 'system@enterprise.com',
       action: action || 'Auditoría',
       detail,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: icon || 'info',
       iconColor: iconColor || '#64748b',
       iconBg: iconBg || 'rgba(100,116,139,0.08)'
@@ -401,7 +408,7 @@ app.post('/api/audit-sessions', requireAuth, async (req, res) => {
       email: 'auditor@audit.com',
       action: 'Auditoría',
       detail: `Auditoría física "${name}" completada con ${compliance} de conciliación.`,
-      time: 'Hace unos instantes',
+      time: getFormattedTime(),
       icon: 'fact_check',
       iconColor: '#2563eb',
       iconBg: 'rgba(37,99,235,0.08)'
