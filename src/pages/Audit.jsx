@@ -16,6 +16,7 @@ export default function Audit() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let isMounted = true;
@@ -39,6 +40,11 @@ export default function Audit() {
     loadData();
     return () => { isMounted = false; };
   }, []);
+
+  // Reset page when search or action filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, actionFilter]);
 
   const handleNewConciliation = async () => {
     const name = prompt("Ingrese el nombre de la sesión de conciliación:", "Auditoría Física Express");
@@ -67,6 +73,12 @@ export default function Audit() {
     const matchAction = !actionFilter || l.action === actionFilter;
     return matchSearch && matchAction;
   });
+
+  const ITEMS_PER_PAGE = 15;
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / ITEMS_PER_PAGE));
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedLogs = filteredLogs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
 
   return (
     <div className="p-6 lg:p-8 flex flex-col gap-6 animate-fade-in">
@@ -118,7 +130,7 @@ export default function Audit() {
           style={{ border: '1px solid rgba(15,23,42,0.07)', boxShadow: '0 1px 3px rgba(15,23,42,0.05)' }}
         >
           <div className="divide-y divide-slate-100">
-            {filteredLogs.length > 0 ? filteredLogs.map((log) => {
+            {paginatedLogs.length > 0 ? paginatedLogs.map((log) => {
               const ac = ACTION_COLORS[log.action] || { text: '#475569', bg: '#f1f5f9', border: 'transparent' };
               return (
                 <div key={log.id} className="flex gap-4 p-4 hover:bg-slate-50/50 transition-colors">
@@ -156,6 +168,33 @@ export default function Audit() {
               </div>
             )}
           </div>
+
+          {/* Pagination Footer */}
+          {!loading && filteredLogs.length > 0 && (
+            <div
+              className="flex items-center justify-between px-5 py-3.5"
+              style={{ borderTop: '1px solid #f1f5f9', background: '#fafafa' }}
+            >
+              <span className="text-[12px] text-slate-400">
+                Mostrando <span className="text-slate-600 font-medium">{startIndex + 1}</span> a <span className="text-slate-600 font-medium">{Math.min(startIndex + ITEMS_PER_PAGE, filteredLogs.length)}</span> de <span className="text-slate-600 font-medium">{filteredLogs.length}</span> registros
+              </span>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setCurrentPage(n)}
+                    className="w-7 h-7 rounded-lg text-[12px] font-medium transition-all duration-150"
+                    style={n === currentPage
+                      ? { background: 'rgba(124, 58, 237, 0.1)', color: '#7c3aed', border: '1px solid rgba(124, 58, 237, 0.2)' }
+                      : { background: '#ffffff', color: '#94a3b8', border: '1px solid rgba(15, 23, 42, 0.08)' }
+                    }
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
