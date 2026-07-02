@@ -69,7 +69,7 @@ export default function Login() {
           >
             <span className="material-symbols-outlined icon-filled text-white" style={{ fontSize: '14px' }}>inventory_2</span>
           </div>
-          <span className="font-bold text-[14px] text-slate-800">Miguel<span className="text-gradient-electric"> Stock</span></span>
+          <span className="font-bold text-[14px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
         </div>
         <div className="flex items-center gap-2">
           <span className="dot-pulse" style={{ color: '#7c3aed', background: '#7c3aed' }} />

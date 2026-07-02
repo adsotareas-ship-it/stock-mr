@@ -77,7 +77,7 @@ export default function Sidebar({ onNewAssetClick }) {
             </div>
             <div>
               <span className="font-bold text-[15px] tracking-tight leading-none block text-slate-800">
-                Miguel<span className="text-gradient-electric"> Stock</span>
+                Sma Latb<span className="text-gradient-electric"> Stock</span>
               </span>
               <span className="text-[10px] text-slate-400 font-medium tracking-widest uppercase leading-none">
                 Gestión de Activos

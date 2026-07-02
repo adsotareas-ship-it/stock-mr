@@ -299,7 +299,7 @@ export default function Inventory() {
       doc.text(dateStr, pageW / 2, pageH - 4, { align: 'center' });
     }
 
-    doc.save(`inventario_miguel_stock_${today.toISOString().slice(0, 10)}.pdf`);
+    doc.save(`inventario_sma_latb_stock_${today.toISOString().slice(0, 10)}.pdf`);
   };
 
   const handleOpenNewAssetModal = () => {
