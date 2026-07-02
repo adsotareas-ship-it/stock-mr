@@ -505,6 +505,10 @@ export default function Loans() {
                                   src={getAssetImage(asset)}
                                   alt={asset.name}
                                   className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
+                                  }}
                                 />
                               </div>
                               <span className="text-[12.5px] font-semibold text-slate-700 dark:text-slate-200">{asset.name}</span>

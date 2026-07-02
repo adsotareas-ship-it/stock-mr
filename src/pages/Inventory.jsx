@@ -485,6 +485,10 @@ export default function Inventory() {
                               src={getAssetImage(asset)}
                               alt={asset.name}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
+                              }}
                             />
                           </div>
                           <div>
