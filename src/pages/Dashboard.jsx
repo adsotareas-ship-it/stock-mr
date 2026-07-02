@@ -407,29 +407,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Access Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { label: 'Nuevo Activo',    icon: 'add_box',          grad: 'from-violet-600 to-cyan-500',   desc: 'Registrar equipo', handler: handleNewAsset },
-          { label: 'Escanear QR',     icon: 'qr_code_scanner',  grad: 'from-violet-500 to-purple-600', desc: 'Búsqueda rápida de activo', handler: handleScanQR },
-          { label: 'Iniciar Auditoría',icon: 'rule',              grad: 'from-emerald-500 to-cyan-500',  desc: 'Control de inventario', handler: handleStartAudit },
-          { label: 'Exportar CSV',    icon: 'table_view',        grad: 'from-amber-500 to-orange-500',  desc: 'Descargar registros', handler: handleExportCSV },
-        ].map((qa, i) => (
-          <button
-            key={i}
-            onClick={qa.handler}
-            className="glass glass-hover rounded-xl p-4 text-left flex items-center gap-3"
-          >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${qa.grad}`}>
-              <span className="material-symbols-outlined text-white" style={{ fontSize: '18px' }}>{qa.icon}</span>
-            </div>
-            <div>
-              <div className="text-[13px] font-semibold text-slate-700">{qa.label}</div>
-              <div className="text-[11px] text-slate-400">{qa.desc}</div>
-            </div>
-          </button>
-        ))}
-      </div>
+
     </div>
   );
 }
