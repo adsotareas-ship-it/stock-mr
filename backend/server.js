@@ -13,8 +13,18 @@ app.use(express.json());
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secure-secret-key-123456789';
 const getFormattedTime = () => {
   const now = new Date();
-  const datePart = now.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
-  const timePart = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const datePart = now.toLocaleDateString('es-CO', { 
+    day: 'numeric', 
+    month: 'short', 
+    year: 'numeric',
+    timeZone: 'America/Bogota'
+  });
+  const timePart = now.toLocaleTimeString('es-CO', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true,
+    timeZone: 'America/Bogota'
+  });
   return `${datePart}, ${timePart.toUpperCase()}`;
 };
 
