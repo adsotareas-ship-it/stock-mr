@@ -302,7 +302,7 @@ export default function Login() {
       )}
 
       <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400">
-        © 2024 Sma Latb Stock. Gestión de Activos IT · v3.2.1
+        © 2026 Sma Latb Stock. Desarrollado por Samuel Rodríguez · v3.2.1
       </div>
     </div>
   );
