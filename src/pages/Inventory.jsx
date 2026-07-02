@@ -477,14 +477,11 @@ export default function Inventory() {
 
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div
-                            className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 bg-white"
-                            style={{ border: '1px solid rgba(15,23,42,0.08)' }}
-                          >
+                          <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-slate-200 bg-white">
                             <img
                               src={getAssetImage(asset)}
                               alt={asset.name}
-                              className="w-full h-full object-contain p-0.5"
+                              className="w-full h-full object-cover"
                               onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
