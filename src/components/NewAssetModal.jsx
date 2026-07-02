@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../utils/api';
+import CategoryCombobox from './CategoryCombobox';
 
 export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [name, setName] = useState('');
@@ -96,23 +97,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Categoría</label>
-              <div className="relative">
-                <input
-                  list="category-options"
-                  className="input-premium w-full px-3 py-2 text-[13px]"
-                  placeholder="Selecciona o escribe una categoría"
-                  value={category}
-                  onChange={e => setCategory(e.target.value)}
-                />
-                <datalist id="category-options">
-                  <option value="Laptop" />
-                  <option value="Display" />
-                  <option value="Networking" />
-                  <option value="Server" />
-                  <option value="Tablet" />
-                  <option value="Mobile" />
-                </datalist>
-              </div>
+              <CategoryCombobox value={category} onChange={setCategory} />
             </div>
 
             <div className="flex flex-col gap-1.5">
