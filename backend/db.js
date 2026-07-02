@@ -463,12 +463,40 @@ async function writeDb(data) {
   await fs.writeFile(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+const mapFromSupabase = (asset) => {
+  if (!asset) return asset;
+  const mapped = { ...asset };
+  if (Array.isArray(mapped.specs)) {
+    const imgSpec = mapped.specs.find(s => s.label === 'imageUrl');
+    if (imgSpec) {
+      mapped.imageUrl = imgSpec.value;
+    }
+  }
+  return mapped;
+};
+
+const mapToSupabase = (asset) => {
+  if (!asset) return asset;
+  const mapped = { ...asset };
+  const imageUrl = mapped.imageUrl;
+  delete mapped.imageUrl;
+
+  let specs = Array.isArray(mapped.specs) ? [...mapped.specs] : [];
+  specs = specs.filter(s => s.label !== 'imageUrl');
+
+  if (imageUrl) {
+    specs.push({ label: 'imageUrl', value: imageUrl, icon: 'image', hidden: true });
+  }
+  mapped.specs = specs;
+  return mapped;
+};
+
 export const db = {
   getAssets: async () => {
     if (isSupabaseEnabled) {
       const { data, error } = await supabase.from('assets').select('*');
       if (error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(mapFromSupabase);
     }
     const data = await readDb();
     return data.assets;
@@ -477,16 +505,17 @@ export const db = {
     if (isSupabaseEnabled) {
       const { data, error } = await supabase.from('assets').select('*').eq('id', id).maybeSingle();
       if (error) throw new Error(error.message);
-      return data;
+      return mapFromSupabase(data);
     }
     const data = await readDb();
     return data.assets.find(a => a.id === id);
   },
   saveAsset: async (asset) => {
     if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('assets').insert(asset).select().single();
+      const mapped = mapToSupabase(asset);
+      const { data, error } = await supabase.from('assets').insert(mapped).select().single();
       if (error) throw new Error(error.message);
-      return data;
+      return mapFromSupabase(data);
     }
     const data = await readDb();
     data.assets.push(asset);
@@ -495,9 +524,29 @@ export const db = {
   },
   updateAsset: async (id, updates) => {
     if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('assets').update(updates).eq('id', id).select().single();
+      let specs = updates.specs;
+      if (updates.imageUrl !== undefined && !specs) {
+        const { data: current } = await supabase.from('assets').select('specs').eq('id', id).maybeSingle();
+        if (current && Array.isArray(current.specs)) {
+          specs = current.specs;
+        }
+      }
+
+      const mapped = { ...updates };
+      const imageUrl = mapped.imageUrl;
+      delete mapped.imageUrl;
+
+      if (imageUrl !== undefined) {
+        specs = Array.isArray(specs) ? specs.filter(s => s.label !== 'imageUrl') : [];
+        if (imageUrl) {
+          specs.push({ label: 'imageUrl', value: imageUrl, icon: 'image', hidden: true });
+        }
+        mapped.specs = specs;
+      }
+
+      const { data, error } = await supabase.from('assets').update(mapped).eq('id', id).select().single();
       if (error) throw new Error(error.message);
-      return data;
+      return mapFromSupabase(data);
     }
     const data = await readDb();
     const idx = data.assets.findIndex(a => a.id === id);

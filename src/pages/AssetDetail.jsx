@@ -264,7 +264,7 @@ export default function AssetDetail() {
         return parsed;
       }
     }
-    return asset.specs || [];
+    return (asset.specs || []).filter(s => s.label !== 'imageUrl');
   };
 
   const handleUpdateStatus = async (newStatus) => {
