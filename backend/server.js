@@ -144,7 +144,7 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       location: location || 'Laboratorio',
       value: value 
         ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-        : '$4.500.000',
+        : '$0',
       lastAudit: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
       serial: serial || 'S/N-UNKNOWN',
       purchaseDate: purchaseDate || new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -157,10 +157,10 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       financial: { 
         purchase: value 
           ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-          : '$4.500.000',
+          : '$0',
         book: value 
           ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-          : '$4.500.000',
+          : '$0',
         depreciation: '0%', 
         acquired: 'Adquisición de TI' 
       },

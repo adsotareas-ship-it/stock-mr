@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { api } from '../utils/api';
 import CategoryCombobox from './CategoryCombobox';
 
@@ -11,6 +11,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [sub, setSub] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const valueInputRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -25,7 +26,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
         category,
         sub: sub || `${category} Corporativo`,
         serial: serial || undefined,
-        value: value || undefined,
+        value: value !== '' ? value : '0',
         location,
       };
 
@@ -128,18 +129,26 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
               <input
                 type="text"
                 className="input-premium w-full px-3 py-2 text-[13px] font-mono"
-                placeholder="Ej. C02FG492Q05D"
+                placeholder="Ej. C02FG492Q05D  (escanea o escribe)"
                 value={serial}
                 onChange={e => setSerial(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    valueInputRef.current?.focus();
+                  }
+                }}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP)</label>
               <input
+                ref={valueInputRef}
                 type="number"
                 className="input-premium w-full px-3 py-2 text-[13px]"
-                placeholder="Ej. 1299"
+                placeholder="0 (dejar vacío = $0)"
+                min="0"
                 value={value}
                 onChange={e => setValue(e.target.value)}
               />
