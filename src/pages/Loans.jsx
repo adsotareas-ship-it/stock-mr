@@ -500,11 +500,11 @@ export default function Loans() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-6 h-6 rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
+                              <div className="w-6 h-6 rounded-md overflow-hidden flex-shrink-0 border border-slate-200 bg-white">
                                 <img
                                   src={getAssetImage(asset)}
                                   alt={asset.name}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain p-0.5"
                                   onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = getAssetImage({ ...asset, imageUrl: undefined });

@@ -61,6 +61,7 @@ export default function AssetDetail() {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showImageZoom, setShowImageZoom] = useState(false);
 
   // Form states
   const [repairType, setRepairType] = useState('');
@@ -361,16 +362,18 @@ export default function AssetDetail() {
         <div className="relative flex flex-col md:flex-row justify-between gap-5">
           <div className="flex items-start gap-5">
             <div
-              className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0"
+              onClick={() => setShowImageZoom(true)}
+              className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 cursor-pointer hover:scale-105 transition-all duration-200 bg-white"
               style={{
                 border: '1px solid rgba(124, 58, 237, 0.2)',
                 boxShadow: '0 4px 16px rgba(124, 58, 237, 0.1)',
               }}
+              title="Click para ampliar imagen"
             >
               <img
                 src={getAssetImage(asset)}
                 alt={asset.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-1"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
@@ -1092,6 +1095,40 @@ export default function AssetDetail() {
               >
                 Confirmar Baja
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Zoom Modal */}
+      {showImageZoom && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300"
+            onClick={() => setShowImageZoom(false)}
+          />
+          {/* Close Button */}
+          <button
+            onClick={() => setShowImageZoom(false)}
+            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>close</span>
+          </button>
+          {/* Zoomed Image Container */}
+          <div className="relative z-10 max-w-4xl w-full max-h-[85vh] flex flex-col items-center justify-center animate-fade-in">
+            <img
+              src={getAssetImage(asset)}
+              alt={asset.name}
+              className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl bg-white p-3 border border-slate-100"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = getAssetImage({ ...asset, imageUrl: undefined });
+              }}
+            />
+            <div className="mt-4 text-center">
+              <h3 className="text-white text-[15px] font-bold">{asset.name}</h3>
+              <p className="text-slate-400 text-[12px] mt-1">{asset.category} · {asset.id}</p>
             </div>
           </div>
         </div>
