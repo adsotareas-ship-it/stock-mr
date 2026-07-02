@@ -9,6 +9,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
   const [value, setValue] = useState('');
   const [location, setLocation] = useState('Sede — NY');
   const [sub, setSub] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const valueInputRef = useRef(null);
@@ -21,6 +22,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
       setValue(asset.value ? asset.value.replace(/[^0-9]/g, '') : '');
       setLocation(asset.location || 'Sede — NY');
       setSub(asset.sub || '');
+      setImageUrl(asset.imageUrl || '');
       setError('');
     }
   }, [isOpen, asset]);
@@ -40,6 +42,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
         serial: serial || undefined,
         value: value !== '' ? value : '0',
         location,
+        imageUrl: imageUrl || undefined,
       };
 
       const updated = await api.updateAsset(asset.id, assetData);
@@ -162,6 +165,17 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
                 className="input-premium w-full px-3 py-2 text-[13px]"
                 value={value}
                 onChange={e => setValue(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">URL de Imagen del Producto (Opcional)</label>
+              <input
+                type="url"
+                className="input-premium w-full px-3 py-2 text-[13px]"
+                placeholder="Ej. https://url-de-la-imagen.png"
+                value={imageUrl}
+                onChange={e => setImageUrl(e.target.value)}
               />
             </div>
           </div>

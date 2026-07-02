@@ -130,7 +130,7 @@ app.get('/api/assets/:id', requireAuth, async (req, res) => {
 
 app.post('/api/assets', requireAuth, async (req, res) => {
   try {
-    const { id, name, sub, category, location, value, serial, purchaseDate, warrantyYears } = req.body;
+    const { id, name, sub, category, location, value, serial, purchaseDate, warrantyYears, imageUrl } = req.body;
 
     // --- Warranty calculation from real input ---
     const purchaseDateObj = purchaseDate ? new Date(purchaseDate) : new Date();
@@ -173,6 +173,7 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       lastAudit: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
       serial: serial || 'S/N-UNKNOWN',
       purchaseDate: purchaseDateFmt,
+      imageUrl: imageUrl || undefined,
       specs: [
         { icon: 'developer_board', label: 'Procesador', value: 'Configuración estándar' },
         { icon: 'memory',          label: 'Memoria',    value: '16 GB RAM', pct: 100 },

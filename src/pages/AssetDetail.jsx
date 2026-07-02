@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import { getAssetImage } from '../utils/images';
 import EditAssetModal from '../components/EditAssetModal';
 
 const STATUS_COLORS = {
@@ -360,16 +361,17 @@ export default function AssetDetail() {
         <div className="relative flex flex-col md:flex-row justify-between gap-5">
           <div className="flex items-start gap-5">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+              className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, rgba(124, 58, 237,0.12) 0%, rgba(20,184,166,0.08) 100%)',
-                border: '1px solid rgba(124, 58, 237,0.2)',
-                boxShadow: '0 4px 16px rgba(124, 58, 237,0.1)',
+                border: '1px solid rgba(124, 58, 237, 0.2)',
+                boxShadow: '0 4px 16px rgba(124, 58, 237, 0.1)',
               }}
             >
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '32px', color: '#7c3aed' }}>
-                {asset.category === 'Laptop' ? 'laptop' : asset.category === 'Display' ? 'monitor' : asset.category === 'Networking' ? 'router' : 'devices'}
-              </span>
+              <img
+                src={getAssetImage(asset)}
+                alt={asset.name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">

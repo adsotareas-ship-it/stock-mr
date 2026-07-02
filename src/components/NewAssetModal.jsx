@@ -9,6 +9,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [value, setValue] = useState('');
   const [location, setLocation] = useState('Laboratorio');
   const [sub, setSub] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const valueInputRef = useRef(null);
@@ -28,6 +29,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
         serial: serial || undefined,
         value: value !== '' ? value : '0',
         location,
+        imageUrl: imageUrl || undefined,
       };
 
       const saved = await api.createAsset(assetData);
@@ -41,6 +43,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
       setValue('');
       setLocation('Laboratorio');
       setSub('');
+      setImageUrl('');
     } catch (err) {
       setError(err.message || 'Error al guardar el activo.');
     } finally {
@@ -151,6 +154,17 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
                 min="0"
                 value={value}
                 onChange={e => setValue(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">URL de Imagen del Producto (Opcional)</label>
+              <input
+                type="url"
+                className="input-premium w-full px-3 py-2 text-[13px]"
+                placeholder="Ej. https://url-de-la-imagen.png"
+                value={imageUrl}
+                onChange={e => setImageUrl(e.target.value)}
               />
             </div>
           </div>

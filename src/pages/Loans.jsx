@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../utils/api';
+import { getAssetImage } from '../utils/images';
 
 const STATUS_CONFIG = {
   Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#0e7490' },
@@ -498,8 +499,14 @@ export default function Loans() {
                             <span className="text-[12px] font-bold text-violet-700 font-mono">{asset.id}</span>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '15px' }}>{catIcon}</span>
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-6 h-6 rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
+                                <img
+                                  src={getAssetImage(asset)}
+                                  alt={asset.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
                               <span className="text-[12.5px] font-semibold text-slate-700 dark:text-slate-200">{asset.name}</span>
                             </div>
                           </td>

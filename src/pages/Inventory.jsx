@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import { getAssetImage } from '../utils/images';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -477,10 +478,14 @@ export default function Inventory() {
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                            className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0"
                             style={{ background: '#f8fafc', border: '1px solid rgba(15,23,42,0.08)' }}
                           >
-                            <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '15px' }}>{catIcon}</span>
+                            <img
+                              src={getAssetImage(asset)}
+                              alt={asset.name}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                           <div>
                             <div className="text-[13px] font-semibold text-slate-700 group-hover:text-slate-900 transition-colors leading-tight">{asset.name}</div>
