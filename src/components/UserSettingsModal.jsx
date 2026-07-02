@@ -81,7 +81,7 @@ export default function UserSettingsModal({ isOpen, onClose }) {
       >
         <div className="flex justify-between items-center mb-6 pb-2 border-b border-[var(--border-light)]">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-green-600 font-semibold">manage_accounts</span>
+            <span className="material-symbols-outlined text-violet-700 font-semibold">manage_accounts</span>
             <h3 className="text-[16px] font-bold text-slate-800">Ajustes de Perfil</h3>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -97,7 +97,7 @@ export default function UserSettingsModal({ isOpen, onClose }) {
         )}
 
         {success && (
-          <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 rounded-xl text-[12px] text-green-600 dark:text-green-400 flex items-center gap-2">
+          <div className="mb-4 p-3 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-900/30 rounded-xl text-[12px] text-violet-700 dark:text-violet-500 flex items-center gap-2">
             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check_circle</span>
             <span>{success}</span>
           </div>

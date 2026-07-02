@@ -115,19 +115,19 @@ export default function CategoryCombobox({ value, onChange }) {
                 fontSize: '13px',
                 borderRadius: '7px',
                 cursor: 'pointer',
-                color: cat === value ? '#16a34a' : 'var(--text-primary, #1e293b)',
+                color: cat === value ? '#7c3aed' : 'var(--text-primary, #1e293b)',
                 fontWeight: cat === value ? '600' : '400',
-                background: cat === value ? 'rgba(22,163,74,0.06)' : 'transparent',
+                background: cat === value ? 'rgba(124, 58, 237,0.06)' : 'transparent',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(22,163,74,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = cat === value ? 'rgba(22,163,74,0.06)' : 'transparent'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(124, 58, 237,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = cat === value ? 'rgba(124, 58, 237,0.06)' : 'transparent'; }}
             >
               {cat === value
-                ? <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#16a34a' }}>check</span>
+                ? <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#7c3aed' }}>check</span>
                 : <span style={{ width: '14px', display: 'inline-block' }} />}
               {cat}
             </li>

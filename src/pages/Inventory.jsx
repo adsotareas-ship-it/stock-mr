@@ -6,7 +6,7 @@ import autoTable from 'jspdf-autotable';
 
 const STATUS_CONFIG = {
   Assigned:    { color: '#2563eb', bg: 'rgba(37,99,235,0.08)',   border: 'rgba(37,99,235,0.2)',   dot: '#2563eb' },
-  Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#059669' },
+  Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#0e7490' },
   Maintenance: { color: '#b45309', bg: 'rgba(217,119,6,0.08)',    border: 'rgba(217,119,6,0.2)',    dot: '#d97706' },
   Deployed:    { color: '#6d28d9', bg: 'rgba(124,58,237,0.08)',   border: 'rgba(124,58,237,0.2)',   dot: '#7c3aed' },
   Lent:        { color: '#2563eb', bg: 'rgba(37,99,235,0.08)',   border: 'rgba(37,99,235,0.2)',   dot: '#2563eb' },
@@ -121,7 +121,7 @@ export default function Inventory() {
     doc.rect(0, 0, pageW, 28, 'F');
 
     // Accent line
-    doc.setFillColor(22, 163, 74); // green-600
+    doc.setFillColor(22, 163, 74); // violet-700
     doc.rect(0, 28, pageW, 2, 'F');
 
     // Company name
@@ -306,7 +306,7 @@ export default function Inventory() {
   };
 
   const summaryItems = [
-    { label: 'Total',           count: assets.length,                                          color: '#15803d', bg: 'rgba(22,163,74,0.08)', filter: '' },
+    { label: 'Total',           count: assets.length,                                          color: '#15803d', bg: 'rgba(124, 58, 237,0.08)', filter: '' },
     { label: 'Disponible',      count: assets.filter(a => a.status === 'Available').length,    color: '#047857', bg: 'rgba(5,150,105,0.08)', filter: 'Available' },
     { label: 'Prestado',        count: assets.filter(a => a.status === 'Lent' || a.status === 'Assigned').length,         color: '#2563eb', bg: 'rgba(37,99,235,0.08)', filter: 'Lent' },
     { label: 'Mantenimiento',   count: assets.filter(a => a.status === 'Maintenance').length,  color: '#b45309', bg: 'rgba(217,119,6,0.08)', filter: 'Maintenance' },
@@ -322,7 +322,7 @@ export default function Inventory() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
         <div>
-          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Inventario</p>
+          <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Inventario</p>
           <h2 className="text-[20px] font-bold text-slate-800 leading-tight">Registro de Activos</h2>
           <p className="text-[13px] text-slate-500 mt-1">Monitorea y gestiona todos los activos de hardware de la organización</p>
         </div>
@@ -428,7 +428,7 @@ export default function Inventory() {
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="py-16 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-              <div className="w-8 h-8 border-2 border-green-500/20 border-t-green-600 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-violet-600/20 border-t-violet-700 rounded-full animate-spin" />
               <span>Cargando inventario...</span>
             </div>
           ) : (
@@ -471,7 +471,7 @@ export default function Inventory() {
                       className="table-row-premium cursor-pointer group"
                     >
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-bold text-green-600 font-mono">{asset.id}</span>
+                        <span className="text-[12px] font-bold text-violet-700 font-mono">{asset.id}</span>
                       </td>
 
                       <td className="px-4 py-3.5">
@@ -508,7 +508,7 @@ export default function Inventory() {
                           <div className="flex items-center gap-2">
                             <div
                               className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ background: 'linear-gradient(135deg, #16a34a, #14b8a6)' }}
+                              style={{ background: 'linear-gradient(135deg, #7c3aed, #06b6d4)' }}
                             >
                               <span className="text-white text-[9px] font-bold">{asset.assignee[0]}</span>
                             </div>
@@ -527,7 +527,7 @@ export default function Inventory() {
                       </td>
 
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-semibold text-green-600 font-mono">{asset.value}</span>
+                        <span className="text-[12px] font-semibold text-violet-700 font-mono">{asset.value}</span>
                       </td>
 
                       <td className="px-4 py-3.5">
@@ -542,7 +542,7 @@ export default function Inventory() {
                       <p className="text-[14px] text-slate-500">No hay activos que coincidan con los filtros</p>
                       <button
                         onClick={() => { setSearch(''); setStatusFilter(''); setLocationFilter(''); }}
-                        className="text-[13px] text-green-600 hover:text-green-700 transition-colors mt-2 font-medium"
+                        className="text-[13px] text-violet-700 hover:text-violet-800 transition-colors mt-2 font-medium"
                       >
                         Limpiar todos los filtros
                       </button>
@@ -570,7 +570,7 @@ export default function Inventory() {
                   onClick={() => setCurrentPage(n)}
                   className="w-7 h-7 rounded-lg text-[12px] font-medium transition-all duration-150"
                   style={n === currentPage
-                    ? { background: 'rgba(22,163,74,0.1)', color: '#15803d', border: '1px solid rgba(22,163,74,0.2)' }
+                    ? { background: 'rgba(124, 58, 237,0.1)', color: '#15803d', border: '1px solid rgba(124, 58, 237,0.2)' }
                     : { background: '#ffffff', color: '#94a3b8', border: '1px solid rgba(15,23,42,0.08)' }
                   }
                 >

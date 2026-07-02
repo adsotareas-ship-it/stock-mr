@@ -90,7 +90,7 @@ export default function Header({ onMenuToggle }) {
         <div className="relative">
           <span
             className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-200"
-            style={{ fontSize: '16px', color: isSearchFocused ? '#16a34a' : '#94a3b8' }}
+            style={{ fontSize: '16px', color: isSearchFocused ? '#7c3aed' : '#94a3b8' }}
           >
             search
           </span>
@@ -142,8 +142,8 @@ export default function Header({ onMenuToggle }) {
           onClick={() => window.dispatchEvent(new CustomEvent('open-user-settings-modal'))}
           className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer ml-1 flex-shrink-0"
           style={{
-            background: 'linear-gradient(135deg, #16a34a 0%, #14b8a6 100%)',
-            boxShadow: '0 2px 8px rgba(22,163,74,0.3)',
+            background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
+            boxShadow: '0 2px 8px rgba(124, 58, 237,0.3)',
           }}
         >
           <span className="text-white font-bold text-[11px]">{getInitials(profile.name)}</span>

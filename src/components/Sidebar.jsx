@@ -58,7 +58,7 @@ export default function Sidebar({ onNewAssetClick }) {
       <div className="absolute inset-0 bg-[var(--bg-sidebar)] border-r border-[var(--border-light)] transition-colors duration-300" style={{ boxShadow: '1px 0 0 rgba(0, 0, 0, 0.04)' }} />
 
       {/* Top green accent line */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-green-500 via-teal-500 to-green-600 rounded-none" />
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-violet-600 via-cyan-500 to-violet-700 rounded-none" />
 
       <div className="relative flex flex-col h-full z-10">
         {/* Brand Header */}
@@ -67,8 +67,8 @@ export default function Sidebar({ onNewAssetClick }) {
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #16a34a 0%, #14b8a6 100%)',
-                boxShadow: '0 4px 12px rgba(22,163,74,0.3)',
+                background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
+                boxShadow: '0 4px 12px rgba(124, 58, 237,0.3)',
               }}
             >
               <span className="material-symbols-outlined icon-filled text-white" style={{ fontSize: '18px' }}>
@@ -124,7 +124,7 @@ export default function Sidebar({ onNewAssetClick }) {
                     style={{
                       fontSize: '18px',
                       fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                      color: isActive ? '#16a34a' : undefined,
+                      color: isActive ? '#7c3aed' : undefined,
                     }}
                   >
                     {item.icon}
@@ -133,7 +133,7 @@ export default function Sidebar({ onNewAssetClick }) {
                   {isActive && (
                     <div
                       className="ml-auto w-1.5 h-1.5 rounded-full"
-                      style={{ background: '#16a34a', boxShadow: '0 0 6px rgba(22,163,74,0.6)' }}
+                      style={{ background: '#7c3aed', boxShadow: '0 0 6px rgba(124, 58, 237,0.6)' }}
                     />
                   )}
                 </>
@@ -149,11 +149,11 @@ export default function Sidebar({ onNewAssetClick }) {
           {/* System status */}
           <div
             className="px-3 py-2.5 mb-3 rounded-lg"
-            style={{ background: 'rgba(22,163,74,0.06)', border: '1px solid rgba(22,163,74,0.15)' }}
+            style={{ background: 'rgba(124, 58, 237,0.06)', border: '1px solid rgba(124, 58, 237,0.15)' }}
           >
             <div className="flex items-center gap-2">
-              <span className="dot-pulse" style={{ color: '#16a34a', background: '#16a34a' }} />
-              <span className="text-[11px] text-green-700 font-semibold">Sistemas Funcionando</span>
+              <span className="dot-pulse" style={{ color: '#7c3aed', background: '#7c3aed' }} />
+              <span className="text-[11px] text-violet-800 font-semibold">Sistemas Funcionando</span>
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5 ml-[17px]">
               {assetsCount.toLocaleString()} {assetsCount === 1 ? 'activo rastreado' : 'activos rastreados'}
@@ -175,7 +175,7 @@ export default function Sidebar({ onNewAssetClick }) {
           >
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #16a34a 0%, #14b8a6 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)' }}
             >
               <span className="text-white font-bold text-[10px]">{getInitials(profile.name)}</span>
             </div>

@@ -44,7 +44,7 @@ const TAB_LABELS = {
 };
 
 const HIST_COLORS = {
-  assign: '#16a34a', return: '#059669', provision: '#7c3aed', maintenance: '#d97706',
+  assign: '#7c3aed', return: '#0e7490', provision: '#7c3aed', maintenance: '#d97706',
 };
 
 export default function AssetDetail() {
@@ -187,7 +187,7 @@ export default function AssetDetail() {
         action: 'Devolución',
         detail: `Equipo ${asset.id} (${asset.name}) devuelto y restablecido por el profesor.`,
         icon: 'check_circle',
-        iconColor: '#059669',
+        iconColor: '#0e7490',
         iconBg: 'rgba(5,150,105,0.08)',
       });
 
@@ -204,7 +204,7 @@ export default function AssetDetail() {
   if (isLoading) {
     return (
       <div className="py-24 text-center text-slate-400 flex flex-col items-center justify-center gap-3 animate-fade-in">
-        <div className="w-8 h-8 border-2 border-green-500/20 border-t-green-600 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-violet-600/20 border-t-violet-700 rounded-full animate-spin" />
         <span>Cargando detalles de equipo...</span>
       </div>
     );
@@ -215,7 +215,7 @@ export default function AssetDetail() {
       <div className="p-8 text-center text-slate-500 animate-fade-in">
         <span className="material-symbols-outlined text-red-500" style={{ fontSize: '48px' }}>error</span>
         <p className="mt-2 text-[14px]">No se pudo encontrar el activo solicitado.</p>
-        <Link to="/assets" className="text-green-600 hover:text-green-700 transition-colors mt-4 inline-block font-semibold">Volver al Inventario</Link>
+        <Link to="/assets" className="text-violet-700 hover:text-violet-800 transition-colors mt-4 inline-block font-semibold">Volver al Inventario</Link>
       </div>
     );
   }
@@ -282,7 +282,7 @@ export default function AssetDetail() {
           actionText = 'Mantenimiento finalizado / Retornado a Stock';
           logAction = 'Mantenimiento';
           icon = 'check_circle';
-          iconColor = '#059669';
+          iconColor = '#0e7490';
           iconBg = 'rgba(5,150,105,0.08)';
           
           if (asset.maintenance) {
@@ -340,7 +340,7 @@ export default function AssetDetail() {
         <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>chevron_right</span>
         <Link to="/assets" className="hover:text-slate-600 transition-colors">Activos</Link>
         <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>chevron_right</span>
-        <span className="text-green-600 font-semibold">{asset.id}</span>
+        <span className="text-violet-700 font-semibold">{asset.id}</span>
       </div>
 
       {/* Hero Header */}
@@ -351,10 +351,10 @@ export default function AssetDetail() {
         }}
       >
         <div className="absolute top-0 left-0 right-0 h-[3px]" style={{
-          background: 'linear-gradient(90deg, #16a34a, #14b8a6, #22c55e)',
+          background: 'linear-gradient(90deg, #7c3aed, #06b6d4, #a78bfa)',
         }} />
         <div className="absolute right-0 top-0 bottom-0 w-64 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at right center, rgba(22,163,74,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at right center, rgba(124, 58, 237,0.07) 0%, transparent 70%)',
         }} />
 
         <div className="relative flex flex-col md:flex-row justify-between gap-5">
@@ -362,12 +362,12 @@ export default function AssetDetail() {
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, rgba(22,163,74,0.12) 0%, rgba(20,184,166,0.08) 100%)',
-                border: '1px solid rgba(22,163,74,0.2)',
-                boxShadow: '0 4px 16px rgba(22,163,74,0.1)',
+                background: 'linear-gradient(135deg, rgba(124, 58, 237,0.12) 0%, rgba(20,184,166,0.08) 100%)',
+                border: '1px solid rgba(124, 58, 237,0.2)',
+                boxShadow: '0 4px 16px rgba(124, 58, 237,0.1)',
               }}
             >
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '32px', color: '#16a34a' }}>
+              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '32px', color: '#7c3aed' }}>
                 {asset.category === 'Laptop' ? 'laptop' : asset.category === 'Display' ? 'monitor' : asset.category === 'Networking' ? 'router' : 'devices'}
               </span>
             </div>
@@ -427,7 +427,7 @@ export default function AssetDetail() {
                   setReturnError('');
                   setShowReturnModal(true);
                 }}
-                className="btn-ghost flex items-center gap-1.5 text-[12px] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20"
+                className="btn-ghost flex items-center gap-1.5 text-[12px] hover:text-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/20"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>assignment_return</span>
                 Devolver Equipo
@@ -452,7 +452,7 @@ export default function AssetDetail() {
             ) : asset.status === 'Maintenance' ? (
               <button 
                 onClick={() => handleUpdateStatus('Available')}
-                className="btn-ghost flex items-center gap-1.5 text-[12px] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20"
+                className="btn-ghost flex items-center gap-1.5 text-[12px] hover:text-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/20"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>check_circle</span>
                 Marcar como Disponible (Reparado)
@@ -550,7 +550,7 @@ export default function AssetDetail() {
           <div className="relative z-10 w-full max-w-sm bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-light)] shadow-xl animate-fade-in">
             <div className="flex justify-between items-center mb-4 pb-2 border-b border-[var(--border-light)]">
               <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <span className="material-symbols-outlined text-green-600" style={{ fontSize: '18px' }}>send_to_mobile</span>
+                <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>send_to_mobile</span>
                 Prestar Equipo a Alumno
               </h3>
               <button onClick={() => setShowLoanModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -613,10 +613,10 @@ export default function AssetDetail() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowReturnModal(false)} />
           <div className="relative z-10 w-full max-w-md bg-[var(--bg-card)] rounded-2xl shadow-xl overflow-hidden border border-[var(--border-light)] animate-fade-in">
-            <div className="h-[3px] bg-gradient-to-r from-green-500 to-teal-500" />
+            <div className="h-[3px] bg-gradient-to-r from-violet-600 to-cyan-500" />
             <div className="px-6 py-4 border-b border-[var(--border-light)] flex justify-between items-center">
               <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <span className="material-symbols-outlined text-green-600" style={{ fontSize: '18px' }}>task_alt</span>
+                <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>task_alt</span>
                 Retorno Seguro: {asset.id}
               </h3>
               <button onClick={() => setShowReturnModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
@@ -638,7 +638,7 @@ export default function AssetDetail() {
                     type="checkbox"
                     checked={resetChecked}
                     onChange={e => setResetChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200">Restablecimiento de Sistema</div>
@@ -650,7 +650,7 @@ export default function AssetDetail() {
                     type="checkbox"
                     checked={cablesChecked}
                     onChange={e => setCablesChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200">Cables y Accesorios</div>
@@ -662,7 +662,7 @@ export default function AssetDetail() {
                     type="checkbox"
                     checked={damageChecked}
                     onChange={e => setDamageChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200">Inspección Física</div>
@@ -702,7 +702,7 @@ export default function AssetDetail() {
             onClick={() => setActiveTab(tab)}
             className="px-4 py-2 rounded-lg capitalize text-[13px] font-medium transition-all duration-200"
             style={activeTab === tab
-              ? { background: 'rgba(22,163,74,0.08)', color: '#15803d', border: '1px solid rgba(22,163,74,0.2)' }
+              ? { background: 'rgba(124, 58, 237,0.08)', color: '#15803d', border: '1px solid rgba(124, 58, 237,0.2)' }
               : { color: '#94a3b8', border: '1px solid transparent' }
             }
           >
@@ -727,9 +727,9 @@ export default function AssetDetail() {
                 >
                   <div
                     className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.15)' }}
+                    style={{ background: 'rgba(124, 58, 237,0.08)', border: '1px solid rgba(124, 58, 237,0.15)' }}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#16a34a' }}>{spec.icon}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#7c3aed' }}>{spec.icon}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">{spec.label}</div>
@@ -742,15 +742,15 @@ export default function AssetDetail() {
                       <div className="mt-2">
                         <div className="flex justify-between text-[10px] text-slate-400 mb-1">
                           <span>Utilización</span>
-                          <span className="text-green-600 font-semibold">{spec.pct}%</span>
+                          <span className="text-violet-700 font-semibold">{spec.pct}%</span>
                         </div>
                         <div className="h-1.5 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                           <div
                             className="h-full rounded-full"
                             style={{
                               width: `${spec.pct}%`,
-                              background: 'linear-gradient(90deg, #16a34a, #14b8a6)',
-                              boxShadow: '0 0 6px rgba(22,163,74,0.3)',
+                              background: 'linear-gradient(90deg, #7c3aed, #06b6d4)',
+                              boxShadow: '0 0 6px rgba(124, 58, 237,0.3)',
                             }}
                           />
                         </div>
@@ -798,8 +798,8 @@ export default function AssetDetail() {
                         className="h-full rounded-full"
                         style={{
                           width: `${asset.warranty.pct}%`,
-                          background: 'linear-gradient(90deg, #16a34a, #14b8a6)',
-                          boxShadow: '0 0 6px rgba(22,163,74,0.3)',
+                          background: 'linear-gradient(90deg, #7c3aed, #06b6d4)',
+                          boxShadow: '0 0 6px rgba(124, 58, 237,0.3)',
                         }}
                       />
                     </div>
@@ -871,18 +871,18 @@ export default function AssetDetail() {
             ) : asset.assigneeDetail ? (
               <div
                 className="flex items-center gap-4 p-4 rounded-xl mb-5"
-                style={{ background: 'rgba(22,163,74,0.04)', border: '1px solid rgba(22,163,74,0.12)' }}
+                style={{ background: 'rgba(124, 58, 237,0.04)', border: '1px solid rgba(124, 58, 237,0.12)' }}
               >
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #16a34a, #14b8a6)', boxShadow: '0 4px 12px rgba(22,163,74,0.25)' }}
+                  style={{ background: 'linear-gradient(135deg, #7c3aed, #06b6d4)', boxShadow: '0 4px 12px rgba(124, 58, 237,0.25)' }}
                 >
                   <span className="text-white font-bold text-[16px]">{asset.assigneeDetail.name[0]}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[14px] font-bold text-slate-800">{asset.assigneeDetail.name}</div>
                   <div className="text-[12px] text-slate-500">{asset.assigneeDetail.role}</div>
-                  <div className="text-[11px] text-green-600 mt-1">{asset.assigneeDetail.email}</div>
+                  <div className="text-[11px] text-violet-700 mt-1">{asset.assigneeDetail.email}</div>
                 </div>
               </div>
             ) : (
@@ -920,7 +920,7 @@ export default function AssetDetail() {
           <div className="card flex flex-col overflow-hidden" style={{ padding: '0' }}>
             <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100">
               <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#16a34a' }}>build</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#7c3aed' }}>build</span>
                 Resumen de Mantenimiento
               </h3>
             </div>
@@ -1003,7 +1003,7 @@ export default function AssetDetail() {
       {activeTab === 'financial' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {asset.financial ? [
-            { label: 'Precio de Compra', value: asset.financial.purchase,    icon: 'receipt',          color: '#15803d', bg: 'rgba(22,163,74,0.08)' },
+            { label: 'Precio de Compra', value: asset.financial.purchase,    icon: 'receipt',          color: '#15803d', bg: 'rgba(124, 58, 237,0.08)' },
             { label: 'Valor Contable',    value: asset.financial.book,         icon: 'account_balance',  color: '#047857', bg: 'rgba(5,150,105,0.08)' },
             { label: 'Depreciación',     value: asset.financial.depreciation, icon: 'trending_down',    color: '#b45309', bg: 'rgba(217,119,6,0.08)' },
           ].map((f, i) => (
@@ -1016,7 +1016,7 @@ export default function AssetDetail() {
               </div>
               <div className="text-[28px] font-bold leading-none mb-1" style={{ color: f.color }}>{f.value}</div>
               <div className="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: i === 2 ? '37%' : i === 1 ? '63%' : '100%', background: `linear-gradient(90deg, ${f.color}, ${i === 0 ? '#14b8a6' : f.color + 'aa'})` }} />
+                <div className="h-full rounded-full" style={{ width: i === 2 ? '37%' : i === 1 ? '63%' : '100%', background: `linear-gradient(90deg, ${f.color}, ${i === 0 ? '#06b6d4' : f.color + 'aa'})` }} />
               </div>
             </div>
           )) : (

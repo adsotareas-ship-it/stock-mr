@@ -11,7 +11,7 @@ const SEVERITY_CONFIG = {
 const STATUS_CONFIG = {
   'Pending':     { label: 'Pendiente',     color: '#b45309', bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.2)',    dot: '#d97706' },
   'In Progress': { label: 'En Proceso',     color: '#6d28d9', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.2)',   dot: '#7c3aed' },
-  'Resolved':    { label: 'Resuelto',      color: '#047857', bg: 'rgba(5,150,105,0.08)',  border: 'rgba(5,150,105,0.2)',    dot: '#059669' },
+  'Resolved':    { label: 'Resuelto',      color: '#047857', bg: 'rgba(5,150,105,0.08)',  border: 'rgba(5,150,105,0.2)',    dot: '#0e7490' },
 };
 
 export default function Maintenance() {
@@ -109,7 +109,7 @@ export default function Maintenance() {
       {/* Banner */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
         <div>
-          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Mantenimiento</p>
+          <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Mantenimiento</p>
           <h2 className="text-[20px] font-bold text-slate-800 leading-tight">Control de Incidencias</h2>
           <p className="text-[13px] text-slate-500 mt-1">Supervisa y gestiona el estado de reparación de los equipos de la empresa</p>
         </div>
@@ -322,7 +322,7 @@ export default function Maintenance() {
                 return (
                   <tr key={t.id} className="table-row-premium cursor-default group">
                     <td className="px-5 py-4">
-                      <span className="text-[12px] font-bold text-green-600 font-mono">{t.id}</span>
+                      <span className="text-[12px] font-bold text-violet-700 font-mono">{t.id}</span>
                     </td>
                     <td className="px-5 py-4">
                       <div>

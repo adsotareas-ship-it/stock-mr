@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../utils/api';
 
 const STATUS_CONFIG = {
-  Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#059669' },
+  Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#0e7490' },
   Lent:        { color: '#2563eb', bg: 'rgba(37,99,235,0.08)',   border: 'rgba(37,99,235,0.2)',   dot: '#2563eb' },
 };
 
@@ -229,7 +229,7 @@ export default function Loans() {
         action: 'Devolución',
         detail: `Equipo ${assetToReturn.id} (${assetToReturn.name}) devuelto por el alumno y reintegrado al stock.`,
         icon: 'check_circle',
-        iconColor: '#059669',
+        iconColor: '#0e7490',
         iconBg: 'rgba(5,150,105,0.08)',
       });
 
@@ -267,7 +267,7 @@ export default function Loans() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
         <div>
-          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Sesión de Laboratorio</p>
+          <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Sesión de Laboratorio</p>
           <h2 className="text-[20px] font-bold text-slate-800 dark:text-slate-100 leading-tight">Préstamos de Clase</h2>
           <p className="text-[13px] text-slate-500 mt-1">Lending ágil de hardware de redes e informática para alumnos durante las sesiones de clase</p>
         </div>
@@ -282,7 +282,7 @@ export default function Loans() {
             <div className="text-[11px] text-slate-400 font-medium">Equipos Totales</div>
           </div>
           <div className="rounded-xl px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-light)] shadow-sm">
-            <div className="text-[22px] font-bold text-green-600">{availableAssets.length}</div>
+            <div className="text-[22px] font-bold text-violet-700">{availableAssets.length}</div>
             <div className="text-[11px] text-slate-400 font-medium">Disponibles en Armario</div>
           </div>
           <div className="rounded-xl px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-light)] shadow-sm">
@@ -299,7 +299,7 @@ export default function Loans() {
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Cronómetro de Clase</span>
             </div>
             {timerActive && (
-              <span className={`w-2 h-2 rounded-full ${isTimeCritical ? 'bg-red-500 animate-ping' : 'bg-green-500 animate-pulse'}`} />
+              <span className={`w-2 h-2 rounded-full ${isTimeCritical ? 'bg-red-500 animate-ping' : 'bg-violet-600 animate-pulse'}`} />
             )}
           </div>
 
@@ -355,7 +355,7 @@ export default function Loans() {
         <div className="xl:col-span-4 flex flex-col gap-4">
           <div className="card" style={{ padding: '24px' }}>
             <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-green-600" style={{ fontSize: '18px' }}>send_to_mobile</span>
+              <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>send_to_mobile</span>
               Prestar Equipo a Alumno
             </h3>
 
@@ -366,7 +366,7 @@ export default function Loans() {
                 </div>
               )}
               {formSuccess && (
-                <div className="text-[12px] text-green-600 bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/30 p-2.5 rounded-lg">
+                <div className="text-[12px] text-violet-700 bg-violet-50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/30 p-2.5 rounded-lg">
                   {formSuccess}
                 </div>
               )}
@@ -495,7 +495,7 @@ export default function Loans() {
                       return (
                         <tr key={asset.id} className="border-b border-slate-50 dark:border-slate-800/40 hover:bg-slate-50/40 dark:hover:bg-slate-800/10 transition-colors">
                           <td className="px-4 py-3">
-                            <span className="text-[12px] font-bold text-green-600 font-mono">{asset.id}</span>
+                            <span className="text-[12px] font-bold text-violet-700 font-mono">{asset.id}</span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
@@ -518,7 +518,7 @@ export default function Loans() {
                           <td className="px-4 py-3 text-right">
                             <button
                               onClick={() => handleOpenReturnModal(asset)}
-                              className="px-2.5 py-1 rounded bg-green-50 dark:bg-green-950/20 text-green-600 hover:bg-green-100 dark:hover:bg-green-950/40 border border-green-200/30 text-[11px] font-bold transition-all"
+                              className="px-2.5 py-1 rounded bg-violet-50 dark:bg-violet-950/20 text-violet-700 hover:bg-violet-100 dark:hover:bg-violet-950/40 border border-violet-200/30 text-[11px] font-bold transition-all"
                             >
                               Devolver
                             </button>
@@ -549,12 +549,12 @@ export default function Loans() {
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowReturnModal(false)} />
 
           <div className="relative z-10 w-full max-w-md bg-[var(--bg-card)] rounded-2xl shadow-xl overflow-hidden border border-[var(--border-light)] animate-fade-in">
-            <div className="h-[3px] bg-gradient-to-r from-green-500 to-teal-500" />
+            <div className="h-[3px] bg-gradient-to-r from-violet-600 to-cyan-500" />
             
             {/* Header */}
             <div className="px-6 py-4 border-b border-[var(--border-light)] flex justify-between items-center">
               <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <span className="material-symbols-outlined text-green-600" style={{ fontSize: '18px' }}>task_alt</span>
+                <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>task_alt</span>
                 Retorno Seguro: {assetToReturn.id}
               </h3>
               <button onClick={() => setShowReturnModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
@@ -581,7 +581,7 @@ export default function Loans() {
                     type="checkbox"
                     checked={resetChecked}
                     onChange={e => setResetChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200 font-semibold">Restablecimiento de Sistema</div>
@@ -594,7 +594,7 @@ export default function Loans() {
                     type="checkbox"
                     checked={cablesChecked}
                     onChange={e => setCablesChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200 font-semibold">Cables y Accesorios</div>
@@ -607,7 +607,7 @@ export default function Loans() {
                     type="checkbox"
                     checked={damageChecked}
                     onChange={e => setDamageChecked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500 cursor-pointer"
+                    className="mt-0.5 w-4 h-4 text-violet-700 border-slate-300 rounded focus:ring-violet-600 cursor-pointer"
                   />
                   <div>
                     <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-200 font-semibold">Inspección Física</div>

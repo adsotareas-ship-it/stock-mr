@@ -59,12 +59,12 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
       {/* Modal Card */}
       <div className="relative z-10 w-full max-w-lg mx-4 bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in border border-slate-100">
         {/* Top Accent Line */}
-        <div className="h-[3px] bg-gradient-to-r from-green-500 to-teal-500" />
+        <div className="h-[3px] bg-gradient-to-r from-violet-600 to-cyan-500" />
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
           <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
-            <span className="material-symbols-outlined text-green-600" style={{ fontSize: '18px' }}>inventory_2</span>
+            <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>inventory_2</span>
             Registrar Nuevo Activo
           </h3>
           <button 

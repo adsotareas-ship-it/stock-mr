@@ -56,7 +56,7 @@ export default function Dashboard() {
     {
       label: 'Total de Activos', value: totalAssets, change: '+1 registrado recientemente', up: true,
       icon: 'inventory_2',
-      iconColor: '#15803d', iconBg: 'rgba(22,163,74,0.1)',
+      iconColor: '#15803d', iconBg: 'rgba(124, 58, 237,0.1)',
       cls: 'stat-electric',
     },
     {
@@ -92,12 +92,12 @@ export default function Dashboard() {
 
   const getBarColor = (name, type) => {
     if (type === 'category') {
-      if (name.toLowerCase().includes('laptop')) return '#16a34a';
+      if (name.toLowerCase().includes('laptop')) return '#7c3aed';
       if (name.toLowerCase().includes('display') || name.toLowerCase().includes('pantalla')) return '#0d9488';
       if (name.toLowerCase().includes('net') || name.toLowerCase().includes('red')) return '#7c3aed';
       return '#d97706';
     } else {
-      if (name.toLowerCase().includes('ny') || name.toLowerCase().includes('york')) return '#16a34a';
+      if (name.toLowerCase().includes('ny') || name.toLowerCase().includes('york')) return '#7c3aed';
       if (name.toLowerCase().includes('sf') || name.toLowerCase().includes('francisco')) return '#0d9488';
       if (name.toLowerCase().includes('remoto')) return '#7c3aed';
       return '#d97706';
@@ -122,13 +122,13 @@ export default function Dashboard() {
   // If dynamic chart data is empty, populate fallback
   if (chartData.category.length === 0) {
     chartData.category = [
-      { name: 'Laptops', count: 0, pct: 10, color: '#16a34a' },
+      { name: 'Laptops', count: 0, pct: 10, color: '#7c3aed' },
       { name: 'Servidores', count: 0, pct: 10, color: '#0d9488' }
     ];
   }
   if (chartData.location.length === 0) {
     chartData.location = [
-      { name: 'Sede — NY', count: 0, pct: 10, color: '#16a34a' },
+      { name: 'Sede — NY', count: 0, pct: 10, color: '#7c3aed' },
       { name: 'Remoto', count: 0, pct: 10, color: '#7c3aed' }
     ];
   }
@@ -187,15 +187,15 @@ export default function Dashboard() {
       >
         {/* Accent top border */}
         <div className="absolute top-0 left-0 right-0 h-[3px]" style={{
-          background: 'linear-gradient(90deg, #16a34a, #14b8a6, #22c55e)',
+          background: 'linear-gradient(90deg, #7c3aed, #06b6d4, #a78bfa)',
         }} />
         {/* Subtle right gradient */}
         <div className="absolute right-0 top-0 bottom-0 w-64 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at right center, rgba(22,163,74,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at right center, rgba(124, 58, 237,0.08) 0%, transparent 70%)',
         }} />
 
         <div className="relative z-10">
-          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Bienvenido de nuevo</p>
+          <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Bienvenido de nuevo</p>
           <h2 className="text-[22px] font-bold text-slate-800 leading-tight">
             Panel <span className="text-gradient-electric">Ejecutivo</span>
           </h2>
@@ -205,10 +205,10 @@ export default function Dashboard() {
         <div className="relative z-10 hidden lg:flex items-center gap-3">
           <div
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl"
-            style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)' }}
+            style={{ background: 'rgba(124, 58, 237,0.08)', border: '1px solid rgba(124, 58, 237,0.2)' }}
           >
-            <span className="dot-pulse" style={{ color: '#16a34a', background: '#16a34a' }} />
-            <span className="text-[12px] font-semibold text-green-700">Monitoreo en Vivo</span>
+            <span className="dot-pulse" style={{ color: '#7c3aed', background: '#7c3aed' }} />
+            <span className="text-[12px] font-semibold text-violet-800">Monitoreo en Vivo</span>
           </div>
           <button onClick={handleExportCSV} className="btn-electric flex items-center gap-2 text-[13px]">
             <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>download</span>
@@ -268,7 +268,7 @@ export default function Dashboard() {
                   onClick={() => setChartView(v)}
                   className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-all duration-200 ${
                     chartView === v
-                      ? 'bg-[var(--bg-card)] text-green-600 border border-[var(--border-light)] shadow-sm'
+                      ? 'bg-[var(--bg-card)] text-violet-700 border border-[var(--border-light)] shadow-sm'
                       : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent'
                   }`}
                 >
@@ -351,7 +351,7 @@ export default function Dashboard() {
               <h3 className="text-[15px] font-bold text-slate-800">Registro de Actividad</h3>
               <p className="text-[11px] text-slate-400 mt-0.5">Flujo de eventos en vivo</p>
             </div>
-            <button onClick={() => navigate('/audit')} className="text-[12px] text-green-600 hover:text-green-700 font-medium transition-colors">Ver todo</button>
+            <button onClick={() => navigate('/audit')} className="text-[12px] text-violet-700 hover:text-violet-800 font-medium transition-colors">Ver todo</button>
           </div>
 
           <div className="flex-1 overflow-auto divide-y divide-slate-50">
@@ -398,8 +398,8 @@ export default function Dashboard() {
           <div className="px-5 py-3" style={{ borderTop: '1px solid #f1f5f9' }}>
             <button
               onClick={() => navigate('/audit')}
-              className="w-full py-2 rounded-xl text-[12px] font-semibold text-green-600 hover:bg-green-50 transition-colors"
-              style={{ border: '1px solid rgba(22,163,74,0.15)' }}
+              className="w-full py-2 rounded-xl text-[12px] font-semibold text-violet-700 hover:bg-violet-50 transition-colors"
+              style={{ border: '1px solid rgba(124, 58, 237,0.15)' }}
             >
               Ver Registro de Eventos Completo
             </button>
@@ -410,9 +410,9 @@ export default function Dashboard() {
       {/* Quick Access Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Nuevo Activo',    icon: 'add_box',          grad: 'from-green-500 to-teal-500',   desc: 'Registrar equipo', handler: handleNewAsset },
+          { label: 'Nuevo Activo',    icon: 'add_box',          grad: 'from-violet-600 to-cyan-500',   desc: 'Registrar equipo', handler: handleNewAsset },
           { label: 'Escanear QR',     icon: 'qr_code_scanner',  grad: 'from-violet-500 to-purple-600', desc: 'Búsqueda rápida de activo', handler: handleScanQR },
-          { label: 'Iniciar Auditoría',icon: 'rule',              grad: 'from-emerald-500 to-teal-500',  desc: 'Control de inventario', handler: handleStartAudit },
+          { label: 'Iniciar Auditoría',icon: 'rule',              grad: 'from-emerald-500 to-cyan-500',  desc: 'Control de inventario', handler: handleStartAudit },
           { label: 'Exportar CSV',    icon: 'table_view',        grad: 'from-amber-500 to-orange-500',  desc: 'Descargar registros', handler: handleExportCSV },
         ].map((qa, i) => (
           <button

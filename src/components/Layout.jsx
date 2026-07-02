@@ -34,7 +34,7 @@ export default function Layout() {
         className="fixed top-0 left-0 pointer-events-none z-0"
         style={{
           width: '500px', height: '400px',
-          background: 'radial-gradient(circle at 20% 10%, rgba(22,163,74,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle at 20% 10%, rgba(124, 58, 237,0.06) 0%, transparent 70%)',
         }}
       />
 

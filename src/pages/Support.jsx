@@ -82,7 +82,7 @@ export default function Support() {
     <div className="p-6 lg:p-8 flex flex-col gap-6 animate-fade-in max-w-[1200px]">
       {/* Header */}
       <div>
-        <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Guía del Sistema</p>
+        <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Guía del Sistema</p>
         <h2 className="text-[20px] font-bold text-slate-800 dark:text-slate-100 leading-tight">Ayuda y Manual de Usuario</h2>
         <p className="text-[13px] text-slate-500 mt-1">Conoce las funciones principales y los flujos de trabajo recomendados para el control de tu laboratorio de redes</p>
       </div>
@@ -95,13 +95,13 @@ export default function Support() {
             className="card flex flex-col gap-3.5 hover:border-[var(--color-electric)] transition-all duration-300 relative group"
             style={{ padding: '24px' }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-green-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(22,163,74,0.06)', border: '1px solid rgba(22,163,74,0.15)' }}
+                style={{ background: 'rgba(124, 58, 237,0.06)', border: '1px solid rgba(124, 58, 237,0.15)' }}
               >
-                <span className="material-symbols-outlined text-green-600" style={{ fontSize: '20px' }}>{sec.icon}</span>
+                <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '20px' }}>{sec.icon}</span>
               </div>
               <div>
                 <h3 className="text-[14.5px] font-bold text-slate-800 dark:text-slate-100 leading-tight">{sec.title}</h3>
@@ -112,7 +112,7 @@ export default function Support() {
             <ul className="flex flex-col gap-2">
               {sec.bullets.map((b, idx) => (
                 <li key={idx} className="flex gap-2 text-[12px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                  <span className="text-green-500 flex-shrink-0 mt-0.5">•</span>
+                  <span className="text-violet-600 flex-shrink-0 mt-0.5">•</span>
                   <span>{b}</span>
                 </li>
               ))}
@@ -124,10 +124,10 @@ export default function Support() {
       {/* Footer */}
       <div
         className="rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4 bg-[var(--bg-card)] border border-[var(--border-light)] shadow-sm"
-        style={{ background: 'linear-gradient(135deg, rgba(22,163,74,0.02) 0%, rgba(20,184,166,0.02) 100%)' }}
+        style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237,0.02) 0%, rgba(20,184,166,0.02) 100%)' }}
       >
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-green-600" style={{ fontSize: '32px' }}>cloud_done</span>
+          <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '32px' }}>cloud_done</span>
           <div className="text-center sm:text-left">
             <h4 className="text-[13px] font-bold text-slate-800 dark:text-slate-100">Sistema desplegado en la nube</h4>
             <p className="text-[11px] text-slate-400">Los datos persisten en Supabase PostgreSQL. Acceso desde cualquier dispositivo con internet.</p>
@@ -135,8 +135,8 @@ export default function Support() {
         </div>
         <div className="text-right flex flex-col items-center sm:items-end">
           <span className="text-[10px] font-mono text-slate-400 uppercase">Miguel Stock v1.1.0</span>
-          <span className="text-[11px] text-green-600 font-semibold mt-0.5 flex items-center gap-1">
-            <span className="dot-pulse" style={{ width: '6px', height: '6px', color: '#16a34a', background: '#16a34a' }} />
+          <span className="text-[11px] text-violet-700 font-semibold mt-0.5 flex items-center gap-1">
+            <span className="dot-pulse" style={{ width: '6px', height: '6px', color: '#7c3aed', background: '#7c3aed' }} />
             En Producción — Vercel + Supabase
           </span>
         </div>

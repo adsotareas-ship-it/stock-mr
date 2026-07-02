@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 
 const ACTION_COLORS = {
-  'Asignación':   { text: '#15803d', bg: 'rgba(22,163,74,0.08)',    border: 'rgba(22,163,74,0.2)' },
+  'Asignación':   { text: '#15803d', bg: 'rgba(124, 58, 237,0.08)',    border: 'rgba(124, 58, 237,0.2)' },
   'Mantenimiento': { text: '#b45309', bg: 'rgba(217,119,6,0.08)',    border: 'rgba(217,119,6,0.2)' },
   'Registro':      { text: '#6d28d9', bg: 'rgba(124,58,237,0.08)',   border: 'rgba(124,58,237,0.2)' },
   'Modificación':  { text: '#0d9488', bg: 'rgba(13,148,136,0.08)',   border: 'rgba(13,148,136,0.2)' },
@@ -73,7 +73,7 @@ export default function Audit() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
         <div>
-          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-widest mb-1">Auditoría</p>
+          <p className="text-[11px] font-semibold text-violet-700 uppercase tracking-widest mb-1">Auditoría</p>
           <h2 className="text-[20px] font-bold text-slate-800 leading-tight">Registro de Auditoría</h2>
           <p className="text-[13px] text-slate-500 mt-1">Inspecciona la bitácora de eventos y la bitácora de cambios del sistema</p>
         </div>
