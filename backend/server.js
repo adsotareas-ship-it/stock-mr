@@ -130,7 +130,34 @@ app.get('/api/assets/:id', requireAuth, async (req, res) => {
 
 app.post('/api/assets', requireAuth, async (req, res) => {
   try {
-    const { id, name, sub, category, location, value, serial, purchaseDate } = req.body;
+    const { id, name, sub, category, location, value, serial, purchaseDate, warrantyYears } = req.body;
+
+    // --- Warranty calculation from real input ---
+    const purchaseDateObj = purchaseDate ? new Date(purchaseDate) : new Date();
+    const warrantyPeriodYears = parseFloat(warrantyYears ?? 1);
+    const warrantyEndDate = new Date(purchaseDateObj);
+    warrantyEndDate.setFullYear(warrantyEndDate.getFullYear() + Math.floor(warrantyPeriodYears));
+    warrantyEndDate.setMonth(warrantyEndDate.getMonth() + Math.round((warrantyPeriodYears % 1) * 12));
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const totalDays = Math.round((warrantyEndDate - purchaseDateObj) / (1000 * 60 * 60 * 24));
+    const daysRemaining = Math.max(0, Math.round((warrantyEndDate - today) / (1000 * 60 * 60 * 24)));
+    const warrantyPct = totalDays > 0 ? Math.round((daysRemaining / totalDays) * 100) : 0;
+    const warrantyStatus = daysRemaining > 0 ? 'Active' : 'Expired';
+
+    const fmtDate = d => d.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+    const warrantyLabel = warrantyPeriodYears === 0
+      ? 'Sin Garantía'
+      : warrantyPeriodYears < 1
+        ? `Garantía de ${Math.round(warrantyPeriodYears * 12)} meses`
+        : `Garantía de ${warrantyPeriodYears} ${warrantyPeriodYears === 1 ? 'año' : 'años'}`;
+
+    const purchaseDateFmt = purchaseDateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    const formatValue = v => v && v !== '0'
+      ? (v.startsWith('$') ? v : `$${parseFloat(v).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)
+      : '$0';
+
     
     // Set default structure matching the rich specs of the layout
     const newAsset = {
@@ -142,27 +169,21 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       assignee: null,
       assigneeDetail: null,
       location: location || 'Laboratorio',
-      value: value 
-        ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-        : '$0',
+      value: formatValue(value),
       lastAudit: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
       serial: serial || 'S/N-UNKNOWN',
-      purchaseDate: purchaseDate || new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
+      purchaseDate: purchaseDateFmt,
       specs: [
         { icon: 'developer_board', label: 'Procesador', value: 'Configuración estándar' },
         { icon: 'memory',          label: 'Memoria',    value: '16 GB RAM', pct: 100 },
         { icon: 'hard_drive',      label: 'Almacenamiento',   value: '512 GB SSD', pct: 10 },
       ],
-      warranty: { days: 365, pct: 100, label: 'Garantía Estándar de Fábrica', start: 'ene 2026', end: 'ene 2027', status: 'Active' },
-      financial: { 
-        purchase: value 
-          ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-          : '$0',
-        book: value 
-          ? (value.startsWith('$') ? value : `$${parseFloat(value).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`) 
-          : '$0',
-        depreciation: '0%', 
-        acquired: 'Adquisición de TI' 
+      warranty: { days: daysRemaining, pct: warrantyPct, label: warrantyLabel, start: fmtDate(purchaseDateObj), end: fmtDate(warrantyEndDate), status: warrantyStatus },
+      financial: {
+        purchase: formatValue(value),
+        book: formatValue(value),
+        depreciation: '0%',
+        acquired: 'Adquisición de TI'
       },
       history: [
         { action: 'Ingreso al Catálogo', date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }), by: 'Admin de Sistema', type: 'provision' }

@@ -9,6 +9,8 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [value, setValue] = useState('');
   const [location, setLocation] = useState('Laboratorio');
   const [sub, setSub] = useState('');
+  const [purchaseDate, setPurchaseDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [warrantyYears, setWarrantyYears] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const valueInputRef = useRef(null);
@@ -28,6 +30,8 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
         serial: serial || undefined,
         value: value !== '' ? value : '0',
         location,
+        purchaseDate,
+        warrantyYears,
       };
 
       const saved = await api.createAsset(assetData);
@@ -39,8 +43,10 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
       setCategory('Laptop');
       setSerial('');
       setValue('');
-      setLocation('Sede — NY');
+      setLocation('Laboratorio');
       setSub('');
+      setPurchaseDate(new Date().toISOString().split('T')[0]);
+      setWarrantyYears('1');
     } catch (err) {
       setError(err.message || 'Error al guardar el activo.');
     } finally {
@@ -152,6 +158,35 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
                 value={value}
                 onChange={e => setValue(e.target.value)}
               />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Fecha de Compra</label>
+              <input
+                type="date"
+                className="input-premium w-full px-3 py-2 text-[13px]"
+                value={purchaseDate}
+                onChange={e => setPurchaseDate(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Período de Garantía</label>
+              <div className="relative">
+                <select
+                  className="input-premium w-full px-3 py-2 text-[13px] appearance-none cursor-pointer"
+                  value={warrantyYears}
+                  onChange={e => setWarrantyYears(e.target.value)}
+                >
+                  <option value="0">Sin garantía</option>
+                  <option value="0.5">6 meses</option>
+                  <option value="1">1 año</option>
+                  <option value="2">2 años</option>
+                  <option value="3">3 años</option>
+                  <option value="5">5 años</option>
+                </select>
+                <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" style={{ fontSize: '15px' }}>expand_more</span>
+              </div>
             </div>
           </div>
 
