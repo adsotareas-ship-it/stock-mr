@@ -204,8 +204,8 @@ export default function Loans() {
   };
 
   const handleConfirmReturn = async () => {
-    if (!resetChecked || !cablesChecked || !damageChecked) {
-      setReturnError('Es obligatorio verificar todos los puntos del checklist antes de proceder.');
+    if (!resetChecked && !cablesChecked && !damageChecked) {
+      setReturnError('Marca al menos un punto del checklist antes de confirmar.');
       return;
     }
 

@@ -160,8 +160,8 @@ export default function AssetDetail() {
   };
 
   const handleReturn = async () => {
-    if (!resetChecked || !cablesChecked || !damageChecked) {
-      setReturnError('Es obligatorio verificar todos los puntos antes de confirmar.');
+    if (!resetChecked && !cablesChecked && !damageChecked) {
+      setReturnError('Marca al menos un punto del checklist antes de confirmar.');
       return;
     }
     try {
