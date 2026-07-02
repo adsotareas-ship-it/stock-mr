@@ -116,7 +116,7 @@ export default function Login() {
               Acceso Corporativo
             </h1>
             <p className="text-[13px] text-slate-500">
-              Inicia sesión en tu cuenta de Miguel Stock
+              Inicia sesión en tu cuenta de Sma Latb Stock
             </p>
           </div>
 
@@ -209,7 +209,7 @@ export default function Login() {
       </div>
 
       <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400">
-        © 2024 Miguel Stock. Gestión de Activos IT · v3.2.1
+        © 2024 Sma Latb Stock. Gestión de Activos IT · v3.2.1
       </div>
     </div>
   );

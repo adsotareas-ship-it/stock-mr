@@ -134,7 +134,7 @@ export default function Support() {
           </div>
         </div>
         <div className="text-right flex flex-col items-center sm:items-end">
-          <span className="text-[10px] font-mono text-slate-400 uppercase">Miguel Stock v1.1.0</span>
+          <span className="text-[10px] font-mono text-slate-400 uppercase">Sma Latb Stock v1.1.0</span>
           <span className="text-[11px] text-violet-700 font-semibold mt-0.5 flex items-center gap-1">
             <span className="dot-pulse" style={{ width: '6px', height: '6px', color: '#7c3aed', background: '#7c3aed' }} />
             En Producción — Vercel + Supabase

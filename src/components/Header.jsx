@@ -77,7 +77,7 @@ export default function Header({ onMenuToggle }) {
         <div className="hidden md:block">
           <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-0.5">
             <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>home</span>
-            <span>Miguel Stock</span>
+            <span>Sma Latb Stock</span>
             <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>chevron_right</span>
             <span className="text-slate-500">{pageName}</span>
           </div>
