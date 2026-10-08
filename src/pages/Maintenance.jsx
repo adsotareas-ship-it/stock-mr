@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../utils/api';
+import MoneyInput from '../components/MoneyInput';
 
 const SEVERITY_CONFIG = {
   'Crítica': { text: '#b91c1c', bg: 'rgba(220,38,38,0.08)', border: 'rgba(220,38,38,0.2)' },
@@ -72,7 +73,7 @@ export default function Maintenance() {
         type: newType,
         severity: newSeverity,
         tech: newTech || 'Por asignar',
-        cost: newCost ? `$${newCost}` : 'N/A',
+        cost: newCost || '', // digits only: the server formats it (empty -> N/A)
       };
       await api.createTicket(newTicket);
       
@@ -237,12 +238,11 @@ export default function Maintenance() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-bold text-slate-500 uppercase">Costo Estimado ($)</label>
-              <input
-                type="number"
-                placeholder="Ej. 150"
+              <MoneyInput
+                placeholder="Ej. 150.000"
                 className="input-premium py-2 text-[12px]"
                 value={newCost}
-                onChange={e => setNewCost(e.target.value)}
+                onChange={setNewCost}
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 mt-2">

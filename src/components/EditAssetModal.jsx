@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../utils/api';
 import CategoryCombobox from './CategoryCombobox';
+import MoneyInput from './MoneyInput';
 
 export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
   const [name, setName] = useState('');
@@ -159,12 +160,11 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }) {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP)</label>
-              <input
-                ref={valueInputRef}
-                type="number"
+              <MoneyInput
+                inputRef={valueInputRef}
                 className="input-premium w-full px-3 py-2 text-[13px]"
                 value={value}
-                onChange={e => setValue(e.target.value)}
+                onChange={setValue}
               />
             </div>
 

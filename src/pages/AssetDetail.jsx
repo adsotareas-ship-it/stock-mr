@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import MoneyInput from '../components/MoneyInput';
 import { getAssetImage } from '../utils/images';
 import EditAssetModal from '../components/EditAssetModal';
 
@@ -527,12 +528,11 @@ export default function AssetDetail() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-[11px] font-bold text-slate-500 uppercase">Costo Estimado (COP)</label>
-                <input
-                  type="number"
-                  placeholder="Ej. 100"
+                <MoneyInput
+                  placeholder="Ej. 100.000"
                   className="input-premium py-2 text-[12px] px-3"
                   value={repairCost}
-                  onChange={e => setRepairCost(e.target.value)}
+                  onChange={setRepairCost}
                 />
               </div>
               <div className="flex justify-end gap-2 mt-2">
