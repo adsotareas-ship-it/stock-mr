@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../utils/api';
 import { getAssetImage } from '../utils/images';
+import { productKey } from '../utils/products';
 
 const STATUS_CONFIG = {
   Available:   { color: '#047857', bg: 'rgba(5,150,105,0.08)',    border: 'rgba(5,150,105,0.2)',    dot: '#0e7490' },
@@ -225,11 +226,10 @@ export default function Loans() {
   const availableAssets = assets.filter(a => a.status === 'Available');
 
   // Identical units (same name, category and description) are offered as one product with a count.
-  const groupKey = (a) => [a.name, a.category, a.sub].map(v => String(v ?? '').trim().toLowerCase()).join('|');
   const availableGroups = (() => {
     const map = new Map();
     for (const a of [...availableAssets].sort((x, y) => x.id.localeCompare(y.id))) {
-      const key = groupKey(a);
+      const key = productKey(a);
       if (!map.has(key)) map.set(key, { key, name: a.name, category: a.category, units: [] });
       map.get(key).units.push(a);
     }

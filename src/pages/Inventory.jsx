@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { getAssetImage } from '../utils/images';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { buildInventoryPdf } from '../utils/inventoryPdf';
+import { productKey, productStats } from '../utils/products';
 
 const STATUS_CONFIG = {
   Assigned:    { color: '#2563eb', bg: 'rgba(37,99,235,0.08)',   border: 'rgba(37,99,235,0.2)',   dot: '#2563eb' },
@@ -78,6 +78,10 @@ export default function Inventory() {
     else { setSortBy(col); setSortDir('asc'); }
   };
 
+  // Units of the same product across the whole catalog (not just the filtered rows).
+  const stats = productStats(assets);
+  const qtyOf = (a) => stats.get(productKey(a))?.total ?? 1;
+
   const filtered = assets
     .filter(a => {
       const q = search.toLowerCase();
@@ -89,6 +93,9 @@ export default function Inventory() {
     })
     .sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1;
+      if (sortBy === 'quantity') {
+        return (qtyOf(a) - qtyOf(b)) * dir;
+      }
       if (sortBy === 'value') {
         const valA = parseFloat((a.value || '').replace(/[^0-9]/g, '')) || 0;
         const valB = parseFloat((b.value || '').replace(/[^0-9]/g, '')) || 0;
@@ -107,199 +114,16 @@ export default function Inventory() {
 
 
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (filtered.length === 0) return;
-
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const today = new Date();
-    const dateStr = today.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-    const timeStr = today.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-    // ─── Header Bar ───────────────────────────────────────────
-    doc.setFillColor(15, 23, 42); // slate-900
-    doc.rect(0, 0, pageW, 28, 'F');
-
-    // Accent line
-    doc.setFillColor(22, 163, 74); // violet-700
-    doc.rect(0, 28, pageW, 2, 'F');
-
-    // Company name
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Sma Lab Stock', 14, 12);
-
-    // Report subtitle
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(148, 163, 184); // slate-400
-    doc.text('Sistema de Gestión de Activos de TI', 14, 19);
-    doc.text('INFORME CORPORATIVO CONFIDENCIAL', 14, 24);
-
-    // Date / time top-right
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Generado: ${dateStr} ${timeStr}`, pageW - 14, 12, { align: 'right' });
-    doc.text(`Total de activos en catálogo: ${assets.length}`, pageW - 14, 18, { align: 'right' });
-    doc.text(`Activos en este reporte: ${filtered.length}`, pageW - 14, 24, { align: 'right' });
-
-    // ─── Report Title ─────────────────────────────────────────
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(15, 23, 42);
-    doc.text('Registro de Activos de Hardware', 14, 42);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(100, 116, 139);
-    const activeFilters = [
-      statusFilter ? `Estado: ${STATUS_LABELS[statusFilter] || statusFilter}` : null,
-      locationFilter ? `Ubicación: ${locationFilter}` : null,
-      search ? `Búsqueda: "${search}"` : null,
-    ].filter(Boolean);
-    doc.text(
-      activeFilters.length > 0
-        ? `Filtros aplicados — ${activeFilters.join(' | ')}`
-        : 'Sin filtros — mostrando todos los activos disponibles',
-      14,
-      49
-    );
-
-    // ─── Summary Cards Row ────────────────────────────────────
-    const cards = [
-      { label: 'Total de Activos',   value: assets.length,                                        color: [22, 163, 74] },
-      { label: 'Disponibles',        value: assets.filter(a => a.status === 'Available').length,   color: [5, 150, 105] },
-      { label: 'Prestados',          value: assets.filter(a => a.status === 'Lent' || a.status === 'Assigned').length,    color: [37, 99, 235] },
-      { label: 'En Mantenimiento',   value: assets.filter(a => a.status === 'Maintenance').length, color: [180, 83, 9] },
-      { label: 'Desplegados',        value: assets.filter(a => a.status === 'Deployed').length,    color: [109, 40, 217] },
-    ];
-    const cardW = (pageW - 28) / cards.length;
-    const cardY = 55;
-
-    cards.forEach((card, i) => {
-      const cx = 14 + i * cardW;
-
-      // Card background
-      doc.setFillColor(248, 250, 252);
-      doc.setDrawColor(225, 232, 240);
-      doc.roundedRect(cx, cardY, cardW - 3, 20, 3, 3, 'FD');
-
-      // Colored top strip
-      doc.setFillColor(...card.color);
-      doc.roundedRect(cx, cardY, cardW - 3, 4, 2, 2, 'F');
-      doc.rect(cx, cardY + 2, cardW - 3, 2, 'F'); // flush bottom of strip
-
-      // Value
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.setTextColor(...card.color);
-      doc.text(String(card.value), cx + (cardW - 3) / 2, cardY + 13, { align: 'center' });
-
-      // Label
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      doc.setTextColor(100, 116, 139);
-      doc.text(card.label.toUpperCase(), cx + (cardW - 3) / 2, cardY + 18, { align: 'center' });
+    const { doc, filename } = await buildInventoryPdf({
+      assets,
+      filtered,
+      filters: { status: statusFilter, location: locationFilter, search },
+      statusLabels: STATUS_LABELS,
+      categoryLabels: CATEGORY_LABELS,
     });
-
-    // ─── Main Table ───────────────────────────────────────────
-    const statusColors = {
-      Assigned:    { cell: [220, 252, 231], text: [21, 128, 61] },
-      Available:   { cell: [209, 250, 229], text: [4, 120, 87] },
-      Maintenance: { cell: [254, 243, 199], text: [146, 64, 14] },
-      Deployed:    { cell: [237, 233, 254], text: [109, 40, 217] },
-    };
-
-    const tableRows = filtered.map(a => [
-      a.id,
-      a.name + (a.sub ? `\n${a.sub}` : ''),
-      CATEGORY_LABELS[a.category] || a.category,
-      STATUS_LABELS[a.status] || a.status,
-      a.assignee || 'Sin asignar',
-      a.location,
-      a.value || '—',
-      a.purchaseDate || '—',
-      a.serial || '—',
-    ]);
-
-    autoTable(doc, {
-      startY: cardY + 26,
-      head: [['ID Activo', 'Nombre / Modelo', 'Categoría', 'Estado', 'Asignado a', 'Ubicación', 'Valor', 'Adquirido', 'N/S']],
-      body: tableRows,
-      theme: 'grid',
-      styles: {
-        font: 'helvetica',
-        fontSize: 8,
-        cellPadding: { top: 3, right: 4, bottom: 3, left: 4 },
-        valign: 'middle',
-        lineColor: [226, 232, 240],
-        lineWidth: 0.25,
-        textColor: [30, 41, 59],
-      },
-      headStyles: {
-        fillColor: [15, 23, 42],
-        textColor: [255, 255, 255],
-        fontStyle: 'bold',
-        fontSize: 8,
-        halign: 'left',
-        cellPadding: { top: 4, right: 4, bottom: 4, left: 4 },
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252],
-      },
-      columnStyles: {
-        0: { fontStyle: 'bold', textColor: [22, 163, 74], cellWidth: 22 },
-        1: { cellWidth: 52 },
-        2: { cellWidth: 22 },
-        3: { cellWidth: 26 },
-        4: { cellWidth: 32 },
-        5: { cellWidth: 28 },
-        6: { fontStyle: 'bold', textColor: [22, 163, 74], cellWidth: 22, halign: 'right' },
-        7: { cellWidth: 24 },
-        8: { fontStyle: 'normal', textColor: [100, 116, 139], cellWidth: 30 },
-      },
-      didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === 3) {
-          const raw = data.cell.raw;
-          const key = Object.entries(STATUS_LABELS).find(([k, v]) => v === raw)?.[0];
-          const sc = statusColors[key];
-          if (sc) {
-            data.cell.styles.fillColor = sc.cell;
-            data.cell.styles.textColor = sc.text;
-            data.cell.styles.fontStyle = 'bold';
-          }
-        }
-        if (data.section === 'body' && data.column.index === 4 && data.cell.raw === 'Sin asignar') {
-          data.cell.styles.textColor = [148, 163, 184];
-          data.cell.styles.fontStyle = 'italic';
-        }
-      },
-      margin: { left: 14, right: 14 },
-    });
-
-    // ─── Footer on every page ─────────────────────────────────
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-
-      // Footer bar
-      doc.setFillColor(248, 250, 252);
-      doc.rect(0, pageH - 10, pageW, 10, 'F');
-      doc.setDrawColor(226, 232, 240);
-      doc.line(0, pageH - 10, pageW, pageH - 10);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      doc.setTextColor(148, 163, 184);
-      doc.text('Sma Lab Stock — Reporte Confidencial de Inventario de Hardware', 14, pageH - 4);
-      doc.text(`Página ${p} de ${totalPages}`, pageW - 14, pageH - 4, { align: 'right' });
-      doc.text(dateStr, pageW / 2, pageH - 4, { align: 'center' });
-    }
-
-    doc.save(`inventario_sma_lab_stock_${today.toISOString().slice(0, 10)}.pdf`);
+    doc.save(filename);
   };
 
   const handleOpenNewAssetModal = () => {
@@ -443,6 +267,7 @@ export default function Inventory() {
                     { label: 'Estado',          col: 'status' },
                     { label: 'Asignado A',      col: 'assignee' },
                     { label: 'Ubicación',       col: 'location' },
+                    { label: 'Cantidad',        col: 'quantity' },
                     { label: 'Valor',           col: 'value' },
                     { label: 'Última Auditoría', col: 'lastAudit' },
                   ].map((h, idx) => (
@@ -533,6 +358,26 @@ export default function Inventory() {
                       </td>
 
                       <td className="px-4 py-3.5">
+                        {(() => {
+                          const s = stats.get(productKey(asset)) ?? { total: 1, available: asset.status === 'Available' ? 1 : 0 };
+                          return (
+                            <div className="flex flex-col items-start gap-0.5">
+                              <span
+                                className="inline-flex items-center justify-center min-w-[28px] h-6 px-2 rounded-lg text-[12px] font-bold"
+                                style={{ color: '#047857', background: 'rgba(5,150,105,0.1)', border: '1px solid rgba(5,150,105,0.25)' }}
+                                title={`${s.total} ${s.total === 1 ? 'unidad registrada' : 'unidades registradas'} de este producto`}
+                              >
+                                {s.total}
+                              </span>
+                              {s.total > 1 && (
+                                <span className="text-[10px] text-slate-400">{s.available} disp.</span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </td>
+
+                      <td className="px-4 py-3.5">
                         <span className="text-[12px] font-semibold text-violet-700 font-mono">{asset.value}</span>
                       </td>
 
@@ -543,7 +388,7 @@ export default function Inventory() {
                   );
                 }) : (
                   <tr>
-                    <td colSpan="8" className="py-16 text-center">
+                    <td colSpan="9" className="py-16 text-center">
                       <span className="material-symbols-outlined text-slate-300" style={{ fontSize: '40px', display: 'block', marginBottom: '12px' }}>search_off</span>
                       <p className="text-[14px] text-slate-500">No hay activos que coincidan con los filtros</p>
                       <button
