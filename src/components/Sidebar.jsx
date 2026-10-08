@@ -64,17 +64,7 @@ export default function Sidebar({ onNewAssetClick }) {
         {/* Brand Header */}
         <div className="px-6 pt-7 pb-5">
           <Link to="/" className="flex items-center gap-3 group">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
-                boxShadow: '0 4px 12px rgba(124, 58, 237,0.3)',
-              }}
-            >
-              <span className="material-symbols-outlined icon-filled text-white" style={{ fontSize: '18px' }}>
-                inventory_2
-              </span>
-            </div>
+            <img src="/logo.png" alt="Sma Technology" className="h-9 w-auto flex-shrink-0" />
             <div>
               <span className="font-bold text-[15px] tracking-tight leading-none block text-slate-800">
                 Sma Latb<span className="text-gradient-electric"> Stock</span>

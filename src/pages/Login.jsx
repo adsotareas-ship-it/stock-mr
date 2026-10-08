@@ -64,12 +64,7 @@ export default function Login() {
       <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-violet-600 via-cyan-500 to-violet-700" />
       <div className="absolute top-3 left-0 right-0 px-8 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)', boxShadow: '0 3px 10px rgba(124, 58, 237,0.25)' }}
-          >
-            <span className="material-symbols-outlined icon-filled text-white" style={{ fontSize: '14px' }}>inventory_2</span>
-          </div>
+          <img src="/logo.png" alt="Sma Technology" className="h-7 w-auto" />
           <span className="font-bold text-[14px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
         </div>
         <div className="flex items-center gap-2">
