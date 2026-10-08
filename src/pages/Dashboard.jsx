@@ -46,13 +46,12 @@ export default function Dashboard() {
   const operativeAssets = assets.filter(a => a.status !== 'Maintenance' && a.status !== 'Decommissioned').length;
   
   const totalValueNum = assets.reduce((sum, a) => {
-    const cleanVal = parseInt(a.value.replace(/[^0-9]/g, '') || 0);
+    const cleanVal = parseInt(String(a.value ?? '').replace(/[^0-9]/g, '') || 0);
     return sum + cleanVal;
   }, 0);
 
-  const formattedValue = totalValueNum >= 1000000 
-    ? `$${(totalValueNum / 1000000).toFixed(2)}M` 
-    : `$${totalValueNum.toLocaleString('es-CO')}`;
+  // Full amount (e.g. $4.675.000), not abbreviated.
+  const formattedValue = `$${totalValueNum.toLocaleString('es-CO')}`;
 
   const stats = [
     {
