@@ -79,7 +79,7 @@ export default function Login() {
         <div className="relative z-10 flex items-center gap-3 px-12 pt-9">
           <img src="/logo.png" alt="Sma Technology" className="h-10 w-auto" />
           <span className="font-extrabold text-[18px] tracking-tight text-slate-800">
-            Sma Latb<span className="text-gradient-electric"> Stock</span>
+            Sma Lab<span className="text-gradient-electric"> Stock</span>
           </span>
         </div>
 
@@ -136,7 +136,7 @@ export default function Login() {
           {/* mobile brand */}
           <div className="flex lg:hidden items-center gap-2.5 mb-8">
             <img src="/logo.png" alt="Sma Technology" className="h-9 w-auto" />
-            <span className="font-extrabold text-[17px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
+            <span className="font-extrabold text-[17px] text-slate-800">Sma Lab<span className="text-gradient-electric"> Stock</span></span>
           </div>
 
           <h1 className="text-[34px] sm:text-[38px] font-extrabold tracking-tight leading-[1.05] text-slate-900">
@@ -257,7 +257,7 @@ export default function Login() {
         </div>
 
         <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400 px-4">
-          © 2026 Sma Latb Stock. Desarrollado por Samuel Rodríguez · v3.2.1
+          © 2026 Sma Lab Stock. Desarrollado por Samuel Rodríguez · v3.2.1
         </div>
       </main>
 
@@ -283,7 +283,7 @@ export default function Login() {
                 </div>
                 <div>
                   <h3 className="text-[15px] font-bold text-slate-800 leading-tight">Política de Privacidad y Seguridad</h3>
-                  <p className="text-[10.5px] text-slate-400">Protección de Datos Sma Latb Stock</p>
+                  <p className="text-[10.5px] text-slate-400">Protección de Datos Sma Lab Stock</p>
                 </div>
               </div>
               <button 

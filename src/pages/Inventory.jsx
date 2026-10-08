@@ -129,7 +129,7 @@ export default function Inventory() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(255, 255, 255);
-    doc.text('Sma Latb Stock', 14, 12);
+    doc.text('Sma Lab Stock', 14, 12);
 
     // Report subtitle
     doc.setFont('helvetica', 'normal');
@@ -294,12 +294,12 @@ export default function Inventory() {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
       doc.setTextColor(148, 163, 184);
-      doc.text('Sma Latb Stock — Reporte Confidencial de Inventario de Hardware', 14, pageH - 4);
+      doc.text('Sma Lab Stock — Reporte Confidencial de Inventario de Hardware', 14, pageH - 4);
       doc.text(`Página ${p} de ${totalPages}`, pageW - 14, pageH - 4, { align: 'right' });
       doc.text(dateStr, pageW / 2, pageH - 4, { align: 'center' });
     }
 
-    doc.save(`inventario_sma_latb_stock_${today.toISOString().slice(0, 10)}.pdf`);
+    doc.save(`inventario_sma_lab_stock_${today.toISOString().slice(0, 10)}.pdf`);
   };
 
   const handleOpenNewAssetModal = () => {

@@ -193,7 +193,7 @@ export default function Dashboard() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(20);
     doc.setTextColor(255, 255, 255);
-    doc.text('SMA LATB STOCK', 14, 16);
+    doc.text('SMA LAB STOCK', 14, 16);
 
     // Subtitle
     doc.setFont('helvetica', 'normal');
@@ -330,7 +330,7 @@ export default function Dashboard() {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
-        doc.text('Sma Latb Stock · Documento Confidencial · Uso Interno', 14, footerY + 2);
+        doc.text('Sma Lab Stock · Documento Confidencial · Uso Interno', 14, footerY + 2);
         doc.text(
           `Página ${doc.internal.getCurrentPageInfo().pageNumber} · ${dateStr}`,
           pageW - 14, footerY + 2, { align: 'right' }
@@ -338,7 +338,7 @@ export default function Dashboard() {
       },
     });
 
-    doc.save(`reporte_inventario_sma_latb_${now.toISOString().slice(0, 10)}.pdf`);
+    doc.save(`reporte_inventario_sma_lab_${now.toISOString().slice(0, 10)}.pdf`);
   };
 
   return (
