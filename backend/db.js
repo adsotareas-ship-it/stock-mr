@@ -2,12 +2,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
-import { createClient } from '@supabase/supabase-js';
+import pg from 'pg';
 
-const supabaseUrl = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.trim().replace(/\/$/, '') : null;
-const supabaseKey = process.env.SUPABASE_KEY ? process.env.SUPABASE_KEY.trim() : null;
-const isSupabaseEnabled = !!(supabaseUrl && supabaseKey);
-const supabase = isSupabaseEnabled ? createClient(supabaseUrl, supabaseKey) : null;
+// With DATABASE_URL set, data lives in Postgres; otherwise it falls back to backend/db.json (local dev).
+const usePg = !!process.env.DATABASE_URL;
+const pool = usePg ? new pg.Pool({ connectionString: process.env.DATABASE_URL }) : null;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -463,91 +462,85 @@ async function writeDb(data) {
   await fs.writeFile(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-const mapFromSupabase = (asset) => {
-  if (!asset) return asset;
-  const mapped = { ...asset };
-  if (Array.isArray(mapped.specs)) {
-    const imgSpec = mapped.specs.find(s => s.label === 'imageUrl');
-    if (imgSpec) {
-      mapped.imageUrl = imgSpec.value;
-    }
-  }
-  return mapped;
+const toRow = (row) => (row ? row.data : row);
+
+const SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS assets (
+  seq BIGSERIAL PRIMARY KEY,
+  id TEXT UNIQUE NOT NULL,
+  data JSONB NOT NULL
+);
+CREATE TABLE IF NOT EXISTS tickets (
+  seq BIGSERIAL PRIMARY KEY,
+  id TEXT UNIQUE NOT NULL,
+  data JSONB NOT NULL
+);
+CREATE TABLE IF NOT EXISTS logs (
+  seq BIGSERIAL PRIMARY KEY,
+  id TEXT UNIQUE NOT NULL,
+  data JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS audit_sessions (
+  seq BIGSERIAL PRIMARY KEY,
+  id TEXT UNIQUE NOT NULL,
+  data JSONB NOT NULL
+);
+CREATE TABLE IF NOT EXISTS users (
+  email TEXT PRIMARY KEY,
+  name TEXT,
+  password TEXT NOT NULL
+);
+`;
+
+let schemaReady = null;
+const ready = () => (schemaReady ??= pool.query(SCHEMA_SQL));
+
+const pgList = async (table, order = 'seq ASC') => {
+  await ready();
+  const { rows } = await pool.query(`SELECT data FROM ${table} ORDER BY ${order}`);
+  return rows.map(toRow);
 };
-
-const mapToSupabase = (asset) => {
-  if (!asset) return asset;
-  const mapped = { ...asset };
-  const imageUrl = mapped.imageUrl;
-  delete mapped.imageUrl;
-
-  let specs = Array.isArray(mapped.specs) ? [...mapped.specs] : [];
-  specs = specs.filter(s => s.label !== 'imageUrl');
-
-  if (imageUrl) {
-    specs.push({ label: 'imageUrl', value: imageUrl, icon: 'image', hidden: true });
-  }
-  mapped.specs = specs;
-  return mapped;
+const pgGet = async (table, id) => {
+  await ready();
+  const { rows } = await pool.query(`SELECT data FROM ${table} WHERE id = $1`, [id]);
+  return toRow(rows[0]) ?? null;
+};
+const pgInsert = async (table, item) => {
+  await ready();
+  const { rows } = await pool.query(
+    `INSERT INTO ${table} (id, data) VALUES ($1, $2) RETURNING data`,
+    [item.id, item]
+  );
+  return toRow(rows[0]);
+};
+const pgMerge = async (table, id, updates) => {
+  await ready();
+  const { rows } = await pool.query(
+    `UPDATE ${table} SET data = data || $2::jsonb WHERE id = $1 RETURNING data`,
+    [id, JSON.stringify(updates)]
+  );
+  return toRow(rows[0]) ?? null;
 };
 
 export const db = {
   getAssets: async () => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('assets').select('*');
-      if (error) throw new Error(error.message);
-      return (data || []).map(mapFromSupabase);
-    }
-    const data = await readDb();
-    return data.assets;
+    if (usePg) return pgList('assets');
+    return (await readDb()).assets;
   },
   getAssetById: async (id) => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('assets').select('*').eq('id', id).maybeSingle();
-      if (error) throw new Error(error.message);
-      return mapFromSupabase(data);
-    }
-    const data = await readDb();
-    return data.assets.find(a => a.id === id);
+    if (usePg) return pgGet('assets', id);
+    return (await readDb()).assets.find(a => a.id === id);
   },
   saveAsset: async (asset) => {
-    if (isSupabaseEnabled) {
-      const mapped = mapToSupabase(asset);
-      const { data, error } = await supabase.from('assets').insert(mapped).select().single();
-      if (error) throw new Error(error.message);
-      return mapFromSupabase(data);
-    }
+    if (usePg) return pgInsert('assets', asset);
     const data = await readDb();
     data.assets.push(asset);
     await writeDb(data);
     return asset;
   },
   updateAsset: async (id, updates) => {
-    if (isSupabaseEnabled) {
-      let specs = updates.specs;
-      if (updates.imageUrl !== undefined && !specs) {
-        const { data: current } = await supabase.from('assets').select('specs').eq('id', id).maybeSingle();
-        if (current && Array.isArray(current.specs)) {
-          specs = current.specs;
-        }
-      }
-
-      const mapped = { ...updates };
-      const imageUrl = mapped.imageUrl;
-      delete mapped.imageUrl;
-
-      if (imageUrl !== undefined) {
-        specs = Array.isArray(specs) ? specs.filter(s => s.label !== 'imageUrl') : [];
-        if (imageUrl) {
-          specs.push({ label: 'imageUrl', value: imageUrl, icon: 'image', hidden: true });
-        }
-        mapped.specs = specs;
-      }
-
-      const { data, error } = await supabase.from('assets').update(mapped).eq('id', id).select().single();
-      if (error) throw new Error(error.message);
-      return mapFromSupabase(data);
-    }
+    if (usePg) return pgMerge('assets', id, updates);
     const data = await readDb();
     const idx = data.assets.findIndex(a => a.id === id);
     if (idx !== -1) {
@@ -558,10 +551,10 @@ export const db = {
     return null;
   },
   deleteAsset: async (id) => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('assets').delete().eq('id', id).select().single();
-      if (error) throw new Error(error.message);
-      return data;
+    if (usePg) {
+      await ready();
+      const { rows } = await pool.query('DELETE FROM assets WHERE id = $1 RETURNING data', [id]);
+      return toRow(rows[0]) ?? null;
     }
     const data = await readDb();
     const idx = data.assets.findIndex(a => a.id === id);
@@ -573,31 +566,18 @@ export const db = {
     return null;
   },
   getTickets: async () => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('tickets').select('*');
-      if (error) throw new Error(error.message);
-      return data || [];
-    }
-    const data = await readDb();
-    return data.tickets;
+    if (usePg) return pgList('tickets');
+    return (await readDb()).tickets;
   },
   saveTicket: async (ticket) => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('tickets').insert(ticket).select().single();
-      if (error) throw new Error(error.message);
-      return data;
-    }
+    if (usePg) return pgInsert('tickets', ticket);
     const data = await readDb();
     data.tickets.push(ticket);
     await writeDb(data);
     return ticket;
   },
   updateTicket: async (id, updates) => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('tickets').update(updates).eq('id', id).select().single();
-      if (error) throw new Error(error.message);
-      return data;
-    }
+    if (usePg) return pgMerge('tickets', id, updates);
     const data = await readDb();
     const idx = data.tickets.findIndex(t => t.id === id);
     if (idx !== -1) {
@@ -608,36 +588,22 @@ export const db = {
     return null;
   },
   getLogs: async () => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('logs').select('*').order('created_at', { ascending: false });
-      if (error) throw new Error(error.message);
-      return data || [];
-    }
-    const data = await readDb();
-    return data.logs;
+    if (usePg) return pgList('logs', 'seq DESC');
+    return (await readDb()).logs;
   },
   saveLog: async (log) => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('logs').insert(log).select().single();
-      if (error) throw new Error(error.message);
-      return data;
-    }
+    if (usePg) return pgInsert('logs', log);
     const data = await readDb();
     data.logs.unshift(log);
     await writeDb(data);
     return log;
   },
   getAuditSessions: async () => {
-    if (isSupabaseEnabled) {
-      return [];
-    }
-    const data = await readDb();
-    return data.auditSessions || [];
+    if (usePg) return pgList('audit_sessions');
+    return (await readDb()).auditSessions || [];
   },
   saveAuditSession: async (session) => {
-    if (isSupabaseEnabled) {
-      return session;
-    }
+    if (usePg) return pgInsert('audit_sessions', session);
     const data = await readDb();
     data.auditSessions = data.auditSessions || [];
     data.auditSessions.push(session);
@@ -645,20 +611,17 @@ export const db = {
     return session;
   },
   getUser: async () => {
-    if (isSupabaseEnabled) {
-      const { data, error } = await supabase.from('users').select('*');
-      if (error) throw new Error(error.message);
-      if (data && data.length > 0) {
-        return data[0];
-      }
-      const defaultUserObj = {
+    if (usePg) {
+      await ready();
+      const { rows } = await pool.query('SELECT email, name, password FROM users ORDER BY email LIMIT 1');
+      if (rows[0]) return rows[0];
+      const seeded = {
         email: DEFAULT_USER.email,
-        password: bcrypt.hashSync(DEFAULT_USER.password, 10),
-        name: DEFAULT_USER.name
+        name: DEFAULT_USER.name,
+        password: bcrypt.hashSync(DEFAULT_USER.password, 10)
       };
-      const { data: inserted, error: insErr } = await supabase.from('users').insert(defaultUserObj).select().single();
-      if (insErr) throw new Error(insErr.message);
-      return inserted;
+      await pool.query('INSERT INTO users (email, name, password) VALUES ($1, $2, $3)', [seeded.email, seeded.name, seeded.password]);
+      return seeded;
     }
     const data = await readDb();
     if (!data.user) {
@@ -668,17 +631,15 @@ export const db = {
     return data.user;
   },
   updateUser: async (userUpdates) => {
-    if (isSupabaseEnabled) {
-      const updates = { ...userUpdates };
-      if (updates.password) {
-        updates.password = bcrypt.hashSync(updates.password, 10);
-      }
-      const { data: userList } = await supabase.from('users').select('email');
-      const userEmail = (userList && userList.length > 0) ? userList[0].email : DEFAULT_USER.email;
-      
-      const { data, error } = await supabase.from('users').update(updates).eq('email', userEmail).select().single();
-      if (error) throw new Error(error.message);
-      return data;
+    if (usePg) {
+      const current = await db.getUser();
+      const next = { ...current, ...userUpdates };
+      if (userUpdates.password) next.password = bcrypt.hashSync(userUpdates.password, 10);
+      await pool.query(
+        'UPDATE users SET email = $2, name = $3, password = $4 WHERE email = $1',
+        [current.email, next.email, next.name, next.password]
+      );
+      return next;
     }
     const data = await readDb();
     if (!data.user) {
