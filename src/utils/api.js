@@ -62,7 +62,11 @@ export const api = {
   }),
   
   getTickets: () => request('/tickets'),
-  
+
+  deleteTicket: (id) => request(`/tickets/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  }),
+
   createTicket: (ticketData) => request('/tickets', {
     method: 'POST',
     body: JSON.stringify(ticketData),

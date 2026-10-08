@@ -588,6 +588,21 @@ export const db = {
     }
     return null;
   },
+  deleteTicket: async (id) => {
+    if (usePg) {
+      await ready();
+      const { rows } = await pool.query('DELETE FROM tickets WHERE id = $1 RETURNING data', [id]);
+      return toRow(rows[0]) ?? null;
+    }
+    const data = await readDb();
+    const idx = data.tickets.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      const deleted = data.tickets.splice(idx, 1)[0];
+      await writeDb(data);
+      return deleted;
+    }
+    return null;
+  },
   getLogs: async () => {
     if (usePg) return pgList('logs', 'seq DESC');
     return (await readDb()).logs;

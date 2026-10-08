@@ -462,6 +462,44 @@ app.post('/api/tickets', requireAuth, async (req, res) => {
   }
 });
 
+app.delete('/api/tickets/:id', requireAuth, async (req, res) => {
+  try {
+    const deleted = await db.deleteTicket(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Ticket no encontrado.' });
+
+    // Undo the side effects of opening the ticket on its asset.
+    const asset = await db.getAssetById(deleted.assetId);
+    if (asset) {
+      const remaining = await db.getTickets();
+      const stillOpen = remaining.some(t => t.assetId === deleted.assetId && t.status !== 'Resolved');
+
+      const maintenance = [...(asset.maintenance || [])];
+      const mIdx = maintenance.findIndex(m => m.type === deleted.type && m.date === deleted.date && m.cost === deleted.cost);
+      if (mIdx !== -1) maintenance.splice(mIdx, 1);
+
+      const updates = { maintenance };
+      if (asset.status === 'Maintenance' && !stillOpen) updates.status = 'Available';
+      await db.updateAsset(deleted.assetId, updates);
+    }
+
+    await db.saveLog({
+      id: newLogId(),
+      user: 'Soporte de TI',
+      email: req.user.email,
+      action: 'Mantenimiento',
+      detail: `Incidente ${deleted.id} (${deleted.assetName}: ${deleted.type}) eliminado.`,
+      time: getFormattedTime(),
+      icon: 'delete',
+      iconColor: '#dc2626',
+      iconBg: 'rgba(220,38,38,0.08)'
+    });
+
+    res.json({ success: true, id: deleted.id });
+  } catch (err) {
+    serverError(res, err);
+  }
+});
+
 // Endpoints: Logs
 app.get('/api/logs', requireAuth, async (req, res) => {
   try {

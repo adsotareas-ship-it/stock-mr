@@ -22,6 +22,11 @@ export default function Maintenance() {
   const [statusFilter, setStatusFilter] = useState('');
   const [severityFilter, setSeverityFilter] = useState('');
 
+  // Delete confirmation
+  const [ticketToDelete, setTicketToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
   // Form states for adding new incident
   const [showForm, setShowForm] = useState(false);
   const [newAssetId, setNewAssetId] = useState('');
@@ -88,6 +93,25 @@ export default function Maintenance() {
       window.dispatchEvent(new CustomEvent('inventory-updated'));
     } catch (err) {
       alert("Error al registrar el incidente: " + err.message);
+    }
+  };
+
+  const handleDeleteTicket = async () => {
+    if (!ticketToDelete) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await api.deleteTicket(ticketToDelete.id);
+      // The asset may have left "Mantenimiento": reload it too.
+      const [ticketsData, assetsData] = await Promise.all([api.getTickets(), api.getAssets()]);
+      setTickets(ticketsData);
+      setAssets(assetsData);
+      setTicketToDelete(null);
+      window.dispatchEvent(new CustomEvent('inventory-updated'));
+    } catch (err) {
+      setDeleteError(err.message || 'No se pudo eliminar el incidente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -312,6 +336,7 @@ export default function Maintenance() {
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Costo</th>
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Fecha</th>
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Estado</th>
+                <th className="px-5 py-3 text-right text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -359,11 +384,22 @@ export default function Maintenance() {
                         {sc.label}
                       </div>
                     </td>
+                    <td className="px-5 py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => { setDeleteError(''); setTicketToDelete(t); }}
+                        title="Eliminar incidente"
+                        aria-label={`Eliminar incidente ${t.id}`}
+                        className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                      </button>
+                    </td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan="8" className="py-12 text-center text-[13px] text-slate-400">
+                  <td colSpan="9" className="py-12 text-center text-[13px] text-slate-400">
                     No se encontraron incidentes que coincidan con los filtros.
                   </td>
                 </tr>
@@ -372,6 +408,67 @@ export default function Maintenance() {
           </table>
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {ticketToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => !isDeleting && setTicketToDelete(null)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white border border-slate-100 shadow-2xl p-6 animate-fade-in">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-red-600" style={{ fontSize: '22px' }}>delete</span>
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold text-slate-800">¿Eliminar este incidente?</h3>
+                <p className="text-[12.5px] text-slate-500 mt-1 leading-relaxed">
+                  Se eliminará el ticket <span className="font-mono font-semibold text-slate-700">{ticketToDelete.id}</span> de{' '}
+                  <span className="font-semibold text-slate-700">{ticketToDelete.assetName}</span> ({ticketToDelete.type}).
+                  Si el equipo no tiene otros incidentes abiertos, volverá a estado <span className="font-semibold text-slate-700">Disponible</span>.
+                  Esta acción no se puede deshacer.
+                </p>
+              </div>
+            </div>
+
+            {deleteError && (
+              <div className="mt-4 p-2.5 bg-red-50 border border-red-100 rounded-lg text-[12px] text-red-600">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 mt-5">
+              <button
+                type="button"
+                onClick={() => setTicketToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-lg text-[12px] font-semibold text-slate-500 hover:bg-slate-100 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteTicket}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-lg text-[12px] font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors flex items-center gap-1.5 disabled:opacity-60"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span>Eliminando...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>delete</span>
+                    <span>Eliminar</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
