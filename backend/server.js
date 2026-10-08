@@ -1,24 +1,70 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import crypto from 'crypto';
 import { db } from './db.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  DUMMY_HASH, loginGuard, validatePassword, isDefaultPassword,
+  passwordVersion, newLogId, sleep,
+} from './security.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 
-app.set('trust proxy', 1); // behind Nginx: real client IP for the login rate limiter
-app.use(cors());
-app.use(express.json());
+app.set('trust proxy', 1); // behind Nginx: real client IP for rate limiting
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+// Security headers. `upgradeInsecureRequests` stays off until the site is served over HTTPS.
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  hsts: { maxAge: 15552000, includeSubDomains: false },
+  referrerPolicy: { policy: 'no-referrer' },
+}));
+// Same-origin in production; only local dev servers may call the API cross-origin.
+if (!IS_PROD) app.use(cors({ origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/] }));
+app.use(express.json({ limit: '1mb' }));
+app.use('/api', (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+
+if (IS_PROD && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET must be set in production');
 }
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secure-secret-key-123456789';
+// In dev without JWT_SECRET, a random secret per process (sessions end on restart).
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(48).toString('hex');
+const JWT_OPTS = { algorithm: 'HS256', issuer: 'sma-stock', audience: 'sma-stock-admin' };
+
+const serverError = (res, err) => {
+  console.error('[error]', err);
+  res.status(500).json({ error: 'Error interno del servidor.' });
+};
+
+const issueToken = (user) =>
+  jwt.sign({ email: user.email, pv: passwordVersion(user.password) }, JWT_SECRET, { ...JWT_OPTS, expiresIn: '8h' });
+
+const safeEqual = (a, b) => {
+  const x = Buffer.from(String(a)); const y = Buffer.from(String(b));
+  return x.length === y.length && crypto.timingSafeEqual(x, y);
+};
 const getFormattedTime = () => {
   const now = new Date();
   const datePart = now.toLocaleDateString('es-CO', { 
@@ -37,60 +83,79 @@ const getFormattedTime = () => {
 };
 
 
-// Rate Limiter to prevent Brute-Force Attacks on Login
-const loginAttempts = new Map();
-const loginRateLimit = (req, res, next) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  const now = Date.now();
-  const windowMs = 5 * 60 * 1000; // 5 minutes
-  const maxAttempts = 5; // 5 attempts per window
-  
-  if (!loginAttempts.has(ip)) {
-    loginAttempts.set(ip, []);
-  }
-  
-  const attempts = loginAttempts.get(ip).filter(timestamp => now - timestamp < windowMs);
-  attempts.push(now);
-  loginAttempts.set(ip, attempts);
-  
-  if (attempts.length > maxAttempts) {
-    return res.status(429).json({ error: 'Demasiados intentos de inicio de sesión. Por favor, intente de nuevo en 5 minutos.' });
-  }
-  next();
-};
+const clientIp = (req) => req.ip || req.socket.remoteAddress || 'unknown';
 
-// Authentication Middleware to protect routes
-const requireAuth = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+const auditSecurity = (email, action, detail, icon = 'shield', color = '#4f46e5') =>
+  db.saveLog({
+    id: newLogId(),
+    user: 'Seguridad',
+    email: email || 'desconocido',
+    action,
+    detail,
+    time: getFormattedTime(),
+    icon,
+    iconColor: color,
+    iconBg: 'rgba(79,70,229,0.08)',
+  }).catch(err => console.error('[audit]', err.message));
+
+// Authentication middleware: verifies the JWT (pinned algorithm/issuer/audience) and that it
+// still matches the current account, so a password or e-mail change invalidates old tokens.
+const requireAuth = async (req, res, next) => {
+  const header = req.headers['authorization'] || '';
+  if (!header.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Acceso no autorizado. Debe iniciar sesión.' });
   }
-
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(header.slice(7), JWT_SECRET, { algorithms: [JWT_OPTS.algorithm], issuer: JWT_OPTS.issuer, audience: JWT_OPTS.audience });
+    const user = await db.getUser();
+    if (!user || !safeEqual(decoded.email, user.email) || !safeEqual(decoded.pv, passwordVersion(user.password))) {
+      throw new Error('stale token');
+    }
+    req.user = { email: user.email };
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: 'Sesión inválida o expirada. Por favor, vuelva a iniciar sesión.' });
   }
 };
 
 // Endpoint: Login
-app.post('/api/login', loginRateLimit, async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await db.getUser();
-    
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (email === user.email && isMatch) {
-      const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '8h' });
-      res.json({ token, user: { name: user.name, email: user.email } });
-    } else {
-      res.status(401).json({ error: 'Credenciales inválidas. Por favor, verifique su correo y contraseña.' });
+    const { email, password } = req.body ?? {};
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password || email.length > 254 || password.length > 128) {
+      return res.status(400).json({ error: 'Solicitud inválida.' });
     }
+
+    const ip = clientIp(req);
+    const wait = loginGuard.check(ip, email);
+    if (wait) {
+      res.set('Retry-After', String(wait));
+      return res.status(429).json({ error: `Demasiados intentos fallidos. Intenta de nuevo en ${Math.ceil(wait / 60)} minuto(s).` });
+    }
+
+    const user = await db.getUser();
+    const emailOk = !!user && email.trim().toLowerCase() === String(user.email).toLowerCase();
+    // Always run bcrypt, even for an unknown e-mail, to keep response times uniform.
+    const passOk = await bcrypt.compare(password, emailOk ? user.password : DUMMY_HASH);
+
+    if (emailOk && passOk) {
+      if (IS_PROD && isDefaultPassword(password)) {
+        return res.status(403).json({ error: 'La contraseña por defecto está deshabilitada. Define una nueva en el servidor con scripts/set-admin.js.' });
+      }
+      loginGuard.success(ip, email);
+      auditSecurity(user.email, 'Acceso', `Inicio de sesión correcto desde ${ip}.`, 'login', '#16a34a');
+      return res.json({ token: issueToken(user), user: { name: user.name, email: user.email } });
+    }
+
+    const locked = loginGuard.fail(ip, email);
+    console.warn(`[security] login fallido ip=${ip}${locked ? ' (bloqueado)' : ''}`);
+    if (locked) {
+      auditSecurity(email.slice(0, 120), 'Bloqueo', `Demasiados intentos fallidos desde ${ip}; acceso bloqueado 15 minutos.`, 'gpp_bad', '#dc2626');
+    }
+    await sleep(350 + Math.random() * 250);
+    res.status(401).json({ error: 'Credenciales inválidas. Verifica tu correo y contraseña.' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -100,36 +165,68 @@ app.get('/api/user', requireAuth, async (req, res) => {
     const user = await db.getUser();
     res.json({ name: user.name, email: user.email });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
 app.put('/api/user', requireAuth, async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, currentPassword } = req.body ?? {};
+    const user = await db.getUser();
     const updates = {};
-    if (email) updates.email = email;
-    if (password) updates.password = password;
-    if (name) updates.name = name;
-    
+
+    if (name !== undefined) {
+      if (typeof name !== 'string' || !name.trim() || name.length > 100) {
+        return res.status(400).json({ error: 'El nombre no es válido.' });
+      }
+      updates.name = name.trim();
+    }
+    if (email !== undefined) {
+      if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        return res.status(400).json({ error: 'El correo no es válido.' });
+      }
+      if (email.trim().toLowerCase() !== String(user.email).toLowerCase()) updates.email = email.trim();
+    }
+    if (password) {
+      const pwError = validatePassword(password, updates.email ?? user.email);
+      if (pwError) return res.status(400).json({ error: pwError });
+      updates.password = password;
+    }
+
+    // Changing the e-mail or password requires proving knowledge of the current password.
+    if (updates.email || updates.password) {
+      const ip = clientIp(req);
+      const wait = loginGuard.check(ip, user.email);
+      if (wait) {
+        res.set('Retry-After', String(wait));
+        return res.status(429).json({ error: `Demasiados intentos fallidos. Intenta de nuevo en ${Math.ceil(wait / 60)} minuto(s).` });
+      }
+      const ok = typeof currentPassword === 'string' && currentPassword.length <= 128 && await bcrypt.compare(currentPassword, user.password);
+      if (!ok) {
+        loginGuard.fail(ip, user.email);
+        await sleep(400);
+        return res.status(403).json({ error: 'La contraseña actual es incorrecta.' });
+      }
+      loginGuard.success(ip, user.email);
+    }
+
     const updated = await db.updateUser(updates);
-    
-    // Save audit log
     await db.saveLog({
-      id: `LOG-${Math.floor(80000 + Math.random() * 10000)}`,
+      id: newLogId(),
       user: updated.name,
       email: updated.email,
       action: 'Modificación',
-      detail: `Configuración de perfil/credenciales del administrador actualizada.`,
+      detail: updates.password ? 'Contraseña del administrador actualizada.' : 'Perfil del administrador actualizado.',
       time: getFormattedTime(),
       icon: 'manage_accounts',
       iconColor: '#0d9488',
       iconBg: 'rgba(13,148,136,0.08)'
     });
-    
-    res.json({ name: updated.name, email: updated.email });
+
+    // Fresh token, since the old one is tied to the previous e-mail / password.
+    res.json({ name: updated.name, email: updated.email, token: issueToken(updated) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -139,7 +236,7 @@ app.get('/api/assets', requireAuth, async (req, res) => {
     const assets = await db.getAssets();
     res.json(assets);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -149,7 +246,7 @@ app.get('/api/assets/:id', requireAuth, async (req, res) => {
     if (!asset) return res.status(404).json({ error: 'Asset not found' });
     res.json(asset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -234,7 +331,7 @@ app.post('/api/assets', requireAuth, async (req, res) => {
 
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -265,7 +362,7 @@ app.put('/api/assets/:id', requireAuth, async (req, res) => {
     if (!updated) return res.status(404).json({ error: 'Asset not found' });
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -290,7 +387,7 @@ app.delete('/api/assets/:id', requireAuth, async (req, res) => {
     
     res.json(deleted);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -300,7 +397,7 @@ app.get('/api/tickets', requireAuth, async (req, res) => {
     const tickets = await db.getTickets();
     res.json(tickets);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -361,7 +458,7 @@ app.post('/api/tickets', requireAuth, async (req, res) => {
 
     res.status(201).json(savedTicket);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -371,7 +468,7 @@ app.get('/api/logs', requireAuth, async (req, res) => {
     const logs = await db.getLogs();
     res.json(logs);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -392,7 +489,7 @@ app.post('/api/logs', requireAuth, async (req, res) => {
     const saved = await db.saveLog(newLog);
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -402,7 +499,7 @@ app.get('/api/audit-sessions', requireAuth, async (req, res) => {
     const sessions = await db.getAuditSessions();
     res.json(sessions);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
 });
 
@@ -434,8 +531,17 @@ app.post('/api/audit-sessions', requireAuth, async (req, res) => {
 
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    serverError(res, err);
   }
+});
+
+// Last-resort error handler: never leak internals to the client.
+app.use((err, req, res, _next) => {
+  if (err && (err.type === 'entity.parse.failed' || err.type === 'entity.too.large')) {
+    return res.status(err.status || 400).json({ error: 'Solicitud inválida.' });
+  }
+  console.error('[error]', err);
+  res.status(500).json({ error: 'Error interno del servidor.' });
 });
 
 if (process.env.NODE_ENV === 'production') {

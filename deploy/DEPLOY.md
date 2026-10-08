@@ -25,6 +25,15 @@ cp .env.example .env && nano .env     # JWT_SECRET (largo y aleatorio) y DATABAS
 npm ci && npm run build
 ```
 
+## 3b. Crear el administrador (obligatorio)
+No hay credenciales por defecto en producción: la contraseña `admin123` queda bloqueada.
+Crea o cambia el administrador con tu propia contraseña (se escribe oculta, mín. 10 caracteres
+con mayúsculas, minúsculas y números):
+```bash
+cd /var/www/stock-mr && node --env-file=.env scripts/set-admin.js
+```
+Vuelve a ejecutarlo cuando quieras rotar la contraseña desde el servidor. Invalida las sesiones activas.
+
 ## 4. Arrancar con PM2
 ```bash
 pm2 start deploy/ecosystem.config.cjs && pm2 save && pm2 startup   # ejecuta el comando que imprime
@@ -32,6 +41,7 @@ pm2 start deploy/ecosystem.config.cjs && pm2 save && pm2 startup   # ejecuta el 
 
 ## 5. Nginx + HTTPS
 ```bash
+sudo cp deploy/nginx-limits.conf /etc/nginx/conf.d/stock-mr-limits.conf   # límite de intentos de login
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/stock-mr
 sudo sed -i 's/TU_DOMINIO/tudominio.com/' /etc/nginx/sites-available/stock-mr
 sudo ln -s /etc/nginx/sites-available/stock-mr /etc/nginx/sites-enabled/

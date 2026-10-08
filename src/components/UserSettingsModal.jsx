@@ -4,6 +4,8 @@ import { api } from '../utils/api';
 export default function UserSettingsModal({ isOpen, onClose }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [originalEmail, setOriginalEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,7 @@ export default function UserSettingsModal({ isOpen, onClose }) {
     if (isOpen) {
       setError('');
       setSuccess('');
+      setCurrentPassword('');
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -25,6 +28,7 @@ export default function UserSettingsModal({ isOpen, onClose }) {
           const user = await api.getUser();
           setName(user.name);
           setEmail(user.email);
+          setOriginalEmail(user.email);
         } catch (err) {
           setError('Error al cargar datos del usuario.');
         }
@@ -34,6 +38,8 @@ export default function UserSettingsModal({ isOpen, onClose }) {
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const needsCurrentPassword = !!password || (originalEmail !== '' && email.trim().toLowerCase() !== originalEmail.toLowerCase());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,8 +57,15 @@ export default function UserSettingsModal({ isOpen, onClose }) {
       if (password) {
         updates.password = password;
       }
-      await api.updateUser(updates);
+      if (needsCurrentPassword) {
+        updates.currentPassword = currentPassword;
+      }
+      const result = await api.updateUser(updates);
+      // The old token is tied to the previous e-mail/password; keep the session with the new one.
+      if (result?.token) localStorage.setItem('auth_token', result.token);
+      setOriginalEmail(email);
       setSuccess('Perfil actualizado correctamente.');
+      setCurrentPassword('');
       setPassword('');
       setConfirmPassword('');
       // Notify other components
@@ -130,12 +143,28 @@ export default function UserSettingsModal({ isOpen, onClose }) {
             <p className="text-[11px] font-bold text-slate-400 uppercase mb-2">Cambiar Contraseña (Opcional)</p>
           </div>
 
+          {needsCurrentPassword && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase">Contraseña Actual</label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                placeholder="Requerida para cambiar correo o contraseña"
+                className="input-premium px-3 py-2.5 text-[12.5px]"
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <label className="text-[11px] font-bold text-slate-500 uppercase">Nueva Contraseña</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Dejar en blanco para no cambiar"
+                placeholder="Mín. 10 caracteres, con mayúsculas, minúsculas y números"
+                autoComplete="new-password"
                 className="input-premium w-full pl-3 pr-10 py-2.5 text-[12.5px]"
                 value={password}
                 onChange={e => setPassword(e.target.value)}

@@ -18,6 +18,11 @@ async function request(path, options = {}) {
     ...options,
     headers,
   });
+  if (response.status === 401 && path !== '/login' && token) {
+    // Expired or invalidated session (e.g. password changed): back to the login screen.
+    localStorage.removeItem('auth_token');
+    window.location.assign('/login');
+  }
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);

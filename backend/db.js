@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import pg from 'pg';
+import { BCRYPT_COST } from './security.js';
 
 // With DATABASE_URL set, data lives in Postgres; otherwise it falls back to backend/db.json (local dev).
 const usePg = !!process.env.DATABASE_URL;
@@ -615,10 +616,14 @@ export const db = {
       await ready();
       const { rows } = await pool.query('SELECT email, name, password FROM users ORDER BY email LIMIT 1');
       if (rows[0]) return rows[0];
+      // No default credentials in Postgres: the admin is created with `scripts/set-admin.js`
+      // (or ADMIN_EMAIL + ADMIN_PASSWORD on first start).
+      const { ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
+      if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return null;
       const seeded = {
-        email: DEFAULT_USER.email,
+        email: ADMIN_EMAIL,
         name: DEFAULT_USER.name,
-        password: bcrypt.hashSync(DEFAULT_USER.password, 10)
+        password: bcrypt.hashSync(ADMIN_PASSWORD, BCRYPT_COST)
       };
       await pool.query('INSERT INTO users (email, name, password) VALUES ($1, $2, $3)', [seeded.email, seeded.name, seeded.password]);
       return seeded;
@@ -634,7 +639,7 @@ export const db = {
     if (usePg) {
       const current = await db.getUser();
       const next = { ...current, ...userUpdates };
-      if (userUpdates.password) next.password = bcrypt.hashSync(userUpdates.password, 10);
+      if (userUpdates.password) next.password = bcrypt.hashSync(userUpdates.password, BCRYPT_COST);
       await pool.query(
         'UPDATE users SET email = $2, name = $3, password = $4 WHERE email = $1',
         [current.email, next.email, next.name, next.password]
