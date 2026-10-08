@@ -139,15 +139,7 @@ export default function Login() {
             <span className="font-extrabold text-[17px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
           </div>
 
-          <span
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11.5px] font-semibold text-emerald-700"
-            style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.22)' }}
-          >
-            <span className="dot-pulse" style={{ color: '#10b981', background: '#10b981' }} />
-            Conexión segura
-          </span>
-
-          <h1 className="mt-5 text-[34px] sm:text-[38px] font-extrabold tracking-tight leading-[1.05] text-slate-900">
+          <h1 className="text-[34px] sm:text-[38px] font-extrabold tracking-tight leading-[1.05] text-slate-900">
             ¡Bienvenido <span className="text-gradient-electric">de vuelta!</span>
           </h1>
           <p className="mt-2.5 text-[14.5px] text-slate-500 leading-relaxed">
