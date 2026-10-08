@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 
@@ -26,161 +26,221 @@ export default function Login() {
     }
   };
 
-  return (
+  const chip = (style, icon, color, title, sub, anim) => (
     <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[var(--bg-base)]"
+      className="absolute flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5"
+      style={{
+        ...style,
+        background: 'rgba(255,255,255,0.78)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.9)',
+        boxShadow: '0 12px 32px rgba(79,70,229,0.16)',
+        animation: anim,
+      }}
     >
-      {/* Soft background orbs */}
-      <div
-        className="absolute pointer-events-none rounded-full"
-        style={{
-          width: '700px', height: '700px',
-          left: '-200px', top: '-200px',
-          background: 'radial-gradient(circle, rgba(124, 58, 237,0.07) 0%, transparent 65%)',
-          animation: 'float 8s ease-in-out infinite',
-        }}
-      />
-      <div
-        className="absolute pointer-events-none rounded-full"
-        style={{
-          width: '500px', height: '500px',
-          right: '-100px', bottom: '-100px',
-          background: 'radial-gradient(circle, rgba(20,184,166,0.07) 0%, transparent 65%)',
-          animation: 'float 10s ease-in-out infinite reverse',
-        }}
-      />
+      <span
+        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+        style={{ background: color, boxShadow: `0 6px 14px ${color}55` }}
+      >
+        <span className="material-symbols-outlined icon-filled text-white" style={{ fontSize: '19px' }}>{icon}</span>
+      </span>
+      <span className="leading-tight">
+        <span className="block text-[12.5px] font-bold text-slate-800">{title}</span>
+        <span className="block text-[10.5px] text-slate-500">{sub}</span>
+      </span>
+    </div>
+  );
 
-      {/* Grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(rgba(124, 58, 237,0.04) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(124, 58, 237,0.04) 1px, transparent 1px)`,
-          backgroundSize: '48px 48px',
-        }}
-      />
+  return (
+    <div className="min-h-screen flex bg-[var(--bg-card)]">
+      <style>{`
+        @keyframes lgFloatA { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
+        @keyframes lgFloatB { 0%,100% { transform: translateY(0) } 50% { transform: translateY(12px) } }
+        @keyframes lgDrift  { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(24px,-18px) scale(1.08) } }
+        @keyframes lgRise   { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: translateY(0) } }
+        .lg-rise { animation: lgRise .7s cubic-bezier(.2,.8,.2,1) both }
+        .lg-field:focus { background: #fff !important; box-shadow: 0 0 0 4px rgba(99,102,241,0.14) !important; border-color: #6366f1 !important; }
+      `}</style>
 
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-violet-600 via-cyan-500 to-violet-700" />
-      <div className="absolute top-3 left-0 right-0 px-8 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Sma Technology" className="h-7 w-auto" />
-          <span className="font-bold text-[14px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="dot-pulse" style={{ color: '#7c3aed', background: '#7c3aed' }} />
-          <span className="text-[11px] text-violet-800 font-medium">Conexión Segura</span>
-        </div>
-      </div>
-
-      {/* Login Card */}
-      <div className="relative z-10 w-full mx-4 animate-fade-in" style={{ maxWidth: '420px' }}>
-        {/* Card border glow */}
+      {/* ───────── Left: illustration panel ───────── */}
+      <aside
+        className="hidden lg:flex lg:w-[54%] relative overflow-hidden flex-col justify-between"
+        style={{ background: 'linear-gradient(145deg, #eef2ff 0%, #dbe7ff 42%, #e6dcfb 100%)' }}
+      >
+        {/* decorative orbs + dots */}
+        <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, left: -160, top: -140, background: 'radial-gradient(circle, rgba(99,102,241,0.28), transparent 68%)', animation: 'lgDrift 14s ease-in-out infinite' }} />
+        <div className="absolute rounded-full pointer-events-none" style={{ width: 460, height: 460, right: -120, bottom: -100, background: 'radial-gradient(circle, rgba(6,182,212,0.26), transparent 68%)', animation: 'lgDrift 17s ease-in-out infinite reverse' }} />
         <div
-          className="absolute -inset-0.5 rounded-2xl pointer-events-none"
-          style={{
-            background: 'linear-gradient(135deg, rgba(124, 58, 237,0.2) 0%, rgba(20,184,166,0.12) 100%)',
-            filter: 'blur(1px)',
-          }}
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(rgba(79,70,229,0.18) 1.2px, transparent 1.2px)', backgroundSize: '26px 26px', maskImage: 'radial-gradient(ellipse at center, #000 30%, transparent 78%)', WebkitMaskImage: 'radial-gradient(ellipse at center, #000 30%, transparent 78%)' }}
         />
 
-        <div
-          className="relative rounded-2xl px-8 py-9 flex flex-col gap-7 bg-[var(--bg-card)] border border-[var(--border-light)] transition-colors duration-300"
-          style={{
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(124, 58, 237, 0.05)',
-          }}
-        >
+        {/* brand */}
+        <div className="relative z-10 flex items-center gap-3 px-12 pt-9">
+          <img src="/logo.png" alt="Sma Technology" className="h-10 w-auto" />
+          <span className="font-extrabold text-[18px] tracking-tight text-slate-800">
+            Sma Latb<span className="text-gradient-electric"> Stock</span>
+          </span>
+        </div>
+
+        {/* illustration + floating chips */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-10 pt-6">
+          <div className="relative" style={{ width: 'min(100%, 500px)' }}>
+            <div
+              className="absolute inset-6 rounded-full pointer-events-none"
+              style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0) 70%)' }}
+            />
+            <img
+              src="/login-illustration.png"
+              alt="Seguridad y control de activos de TI"
+              className="relative w-full h-auto select-none"
+              style={{ animation: 'lgFloatA 7s ease-in-out infinite', filter: 'drop-shadow(0 28px 36px rgba(79,70,229,0.22))' }}
+              draggable={false}
+            />
+            {chip({ left: '-6%', top: '14%' }, 'verified_user', '#6366f1', 'Cifrado bcrypt', 'Contraseñas protegidas', 'lgFloatB 6s ease-in-out infinite')}
+            {chip({ right: '-8%', top: '34%' }, 'key', '#06b6d4', 'Sesión con JWT', 'Acceso firmado y seguro', 'lgFloatA 8s ease-in-out infinite')}
+            {chip({ left: '4%', bottom: '4%' }, 'monitoring', '#8b5cf6', 'Auditoría en vivo', 'Cada cambio queda registrado', 'lgFloatB 9s ease-in-out infinite')}
+          </div>
+        </div>
+
+        {/* headline */}
+        <div className="relative z-10 px-12 pb-12 max-w-[640px]">
+          <h2 className="text-[34px] leading-[1.1] font-extrabold tracking-tight text-slate-900">
+            Todo tu inventario de TI,{' '}
+            <span className="text-gradient-electric">bajo control.</span>
+          </h2>
+          <p className="mt-3 text-[14.5px] text-slate-600 leading-relaxed">
+            Registra, presta y audita tus equipos desde un solo lugar, con trazabilidad completa y reportes en un clic.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            {[['inventory_2', 'Inventario'], ['swap_horiz', 'Préstamos'], ['build', 'Mantenimiento'], ['fact_check', 'Auditoría']].map(([ic, label]) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-indigo-700"
+                style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(99,102,241,0.18)' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>{ic}</span>
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* ───────── Right: form ───────── */}
+      <main className="flex-1 relative flex flex-col items-center justify-center px-6 py-10 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-indigo-500 via-cyan-400 to-violet-500" />
+        <div className="absolute rounded-full pointer-events-none lg:hidden" style={{ width: 380, height: 380, right: -160, top: -140, background: 'radial-gradient(circle, rgba(99,102,241,0.16), transparent 68%)' }} />
+
+        <div className="w-full lg-rise" style={{ maxWidth: '420px' }}>
+          {/* mobile brand */}
+          <div className="flex lg:hidden items-center gap-2.5 mb-8">
+            <img src="/logo.png" alt="Sma Technology" className="h-9 w-auto" />
+            <span className="font-extrabold text-[17px] text-slate-800">Sma Latb<span className="text-gradient-electric"> Stock</span></span>
+          </div>
+
+          <span
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11.5px] font-semibold text-emerald-700"
+            style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.22)' }}
+          >
+            <span className="dot-pulse" style={{ color: '#10b981', background: '#10b981' }} />
+            Conexión segura
+          </span>
+
+          <h1 className="mt-5 text-[34px] sm:text-[38px] font-extrabold tracking-tight leading-[1.05] text-slate-900">
+            ¡Bienvenido <span className="text-gradient-electric">de vuelta!</span>
+          </h1>
+          <p className="mt-2.5 text-[14.5px] text-slate-500 leading-relaxed">
+            Accede a tu cuenta para gestionar y auditar los activos de TI de tu organización.
+          </p>
+
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl text-[12.5px] text-red-600 dark:text-red-400 flex items-center gap-2">
+            <div className="mt-6 p-3 bg-red-50 border border-red-200 rounded-xl text-[12.5px] text-red-600 flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>error</span>
               <span>{error}</span>
             </div>
           )}
-          {/* Header */}
-          <div className="text-center">
-            <div
-              className="w-14 h-14 rounded-2xl mx-auto mb-5 flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, rgba(124, 58, 237,0.12) 0%, rgba(20,184,166,0.08) 100%)',
-                border: '1px solid rgba(124, 58, 237,0.2)',
-                boxShadow: '0 4px 20px rgba(124, 58, 237,0.12)',
-              }}
-            >
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '28px', color: '#7c3aed' }}>lock</span>
-            </div>
-            <h1 className="text-[22px] font-bold text-slate-800 leading-tight tracking-tight mb-1.5">
-              Acceso Corporativo
-            </h1>
-            <p className="text-[13px] text-slate-500">
-              Inicia sesión en tu cuenta de Sma Latb Stock
-            </p>
-          </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
             {/* Email */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[12px] font-semibold text-slate-600 tracking-wide">
-                Correo Corporativo
+            <div className="flex flex-col gap-2">
+              <label className="text-[13px] font-semibold text-slate-700">
+                Correo electrónico <span className="text-indigo-500">*</span>
               </label>
               <div className="relative">
-                <span
-                  className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ fontSize: '16px', color: email ? '#7c3aed' : '#94a3b8' }}
-                >
-                  alternate_email
-                </span>
                 <input
                   type="email"
-                  className="input-premium w-full pl-10 pr-4 py-3 text-[13px]"
+                  className="lg-field input-premium w-full pl-4 pr-11 py-3.5 text-[14px] rounded-xl"
+                  style={{ background: 'rgba(99,102,241,0.07)', borderColor: 'rgba(99,102,241,0.18)' }}
                   placeholder="admin@enterprise.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  autoComplete="username"
                   required
                 />
+                <span
+                  className="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ fontSize: '19px', color: email ? '#6366f1' : '#94a3b8' }}
+                >
+                  person
+                </span>
               </div>
             </div>
 
             {/* Password */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between">
-                <label className="text-[12px] font-semibold text-slate-600 tracking-wide">Contraseña</label>
-                <button type="button" className="text-[12px] text-violet-700 hover:text-violet-800 transition-colors font-medium">
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[13px] font-semibold text-slate-700">
+                Contraseña <span className="text-indigo-500">*</span>
+              </label>
               <div className="relative">
-                <span
-                  className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ fontSize: '16px', color: password ? '#7c3aed' : '#94a3b8' }}
-                >
-                  key
-                </span>
                 <input
                   type={showPwd ? 'text' : 'password'}
-                  className="input-premium w-full pl-10 pr-11 py-3 text-[13px]"
+                  className="lg-field input-premium w-full pl-4 pr-12 py-3.5 text-[14px] rounded-xl"
+                  style={{ background: 'rgba(99,102,241,0.07)', borderColor: 'rgba(99,102,241,0.18)' }}
                   placeholder="••••••••••••"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  autoComplete="current-password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '19px' }}>
                     {showPwd ? 'visibility_off' : 'visibility'}
                   </span>
                 </button>
               </div>
+              <div className="flex justify-end">
+                <button type="button" className="text-[13px] text-indigo-600 hover:text-indigo-800 transition-colors font-semibold">
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
             </div>
+
+            <p className="text-[12px] text-slate-400 leading-relaxed -mt-1">
+              Al continuar aceptas la{' '}
+              <span
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-indigo-600 hover:text-indigo-800 cursor-pointer font-semibold"
+              >
+                Política de Privacidad y Seguridad
+              </span>{' '}
+              de este sistema.
+            </p>
 
             {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-electric mt-1 py-3 flex items-center justify-center gap-2.5 text-[14px] font-semibold disabled:opacity-60"
+              className="py-4 rounded-xl flex items-center justify-center gap-2.5 text-[15px] font-bold text-white transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0"
+              style={{
+                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #06b6d4 100%)',
+                boxShadow: '0 14px 30px rgba(79,70,229,0.38)',
+              }}
             >
               {isLoading ? (
                 <>
@@ -189,25 +249,23 @@ export default function Login() {
                 </>
               ) : (
                 <>
-                  <span>Iniciar Sesión</span>
-                  <span className="material-symbols-outlined" style={{ fontSize: '17px' }}>arrow_forward</span>
+                  <span>Iniciar sesión</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '19px' }}>arrow_forward</span>
                 </>
               )}
             </button>
           </form>
 
-
-          <p className="text-center text-[11px] text-slate-400">
-            Protegido por cifrado de nivel empresarial.{' '}
-            <span 
-              onClick={() => setShowPrivacyModal(true)} 
-              className="text-violet-700 hover:text-violet-800 cursor-pointer font-medium underline underline-offset-2 transition-colors"
-            >
-              Política de Privacidad
-            </span>
-          </p>
+          <div className="mt-8 flex items-center justify-center gap-2 text-[11.5px] text-slate-400">
+            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>lock</span>
+            Protegido por cifrado de nivel empresarial
+          </div>
         </div>
-      </div>
+
+        <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400 px-4">
+          © 2026 Sma Latb Stock. Desarrollado por Samuel Rodríguez · v3.2.1
+        </div>
+      </main>
 
       {/* Privacy and Security Modal */}
       {showPrivacyModal && (
@@ -296,9 +354,6 @@ export default function Login() {
         </div>
       )}
 
-      <div className="absolute bottom-5 left-0 right-0 text-center text-[11px] text-slate-400">
-        © 2026 Sma Latb Stock. Desarrollado por Samuel Rodríguez · v3.2.1
-      </div>
     </div>
   );
 }
