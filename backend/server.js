@@ -250,9 +250,19 @@ app.get('/api/assets/:id', requireAuth, async (req, res) => {
   }
 });
 
+const MAX_UNITS_PER_BATCH = 100;
+
 app.post('/api/assets', requireAuth, async (req, res) => {
   try {
-    const { id, name, sub, category, location, value, serial, purchaseDate, warrantyYears, imageUrl } = req.body;
+    const { id, name, sub, category, location, value, serial, purchaseDate, warrantyYears, imageUrl } = req.body ?? {};
+
+    if (typeof name !== 'string' || !name.trim() || name.length > 150) {
+      return res.status(400).json({ error: 'El nombre del equipo no es válido.' });
+    }
+    const quantity = req.body?.quantity === undefined ? 1 : Number(req.body.quantity);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_UNITS_PER_BATCH) {
+      return res.status(400).json({ error: `La cantidad debe ser un número entero entre 1 y ${MAX_UNITS_PER_BATCH}.` });
+    }
 
     // --- Warranty calculation from real input ---
     const purchaseDateObj = purchaseDate ? new Date(purchaseDate) : new Date();
@@ -276,15 +286,35 @@ app.post('/api/assets', requireAuth, async (req, res) => {
         : `Garantía de ${warrantyPeriodYears} ${warrantyPeriodYears === 1 ? 'año' : 'años'}`;
 
     const purchaseDateFmt = purchaseDateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-    const formatValue = v => v && v !== '0'
-      ? (v.startsWith('$') ? v : `$${parseFloat(v).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)
-      : '$0';
+    const formatValue = v => {
+      const s = v === undefined || v === null ? '' : String(v);
+      return s && s !== '0'
+        ? (s.startsWith('$') ? s : `$${parseFloat(s).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)
+        : '$0';
+    };
 
-    
+    // Unique asset IDs (AST-####), also across the units of this batch.
+    const usedIds = new Set((await db.getAssets()).map(a => a.id));
+    const nextId = () => {
+      for (let i = 0; i < 1000; i++) {
+        const candidate = `AST-${Math.floor(1000 + Math.random() * 9000)}`;
+        if (!usedIds.has(candidate)) { usedIds.add(candidate); return candidate; }
+      }
+      throw new Error('No se pudo generar un ID de activo único.');
+    };
+    let customId = null;
+    if (id && quantity === 1) {
+      if (usedIds.has(id)) return res.status(409).json({ error: `Ya existe un activo con el ID ${id}.` });
+      usedIds.add(id);
+      customId = id;
+    }
+
+    const registeredOn = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+
     // Set default structure matching the rich specs of the layout
-    const newAsset = {
-      id: id || `AST-${Math.floor(1000 + Math.random() * 9000)}`,
-      name,
+    const buildAsset = (assetId) => ({
+      id: assetId,
+      name: name.trim(),
       sub: sub || 'Nuevo Dispositivo',
       category: category || 'Laptop',
       status: 'Available',
@@ -292,8 +322,9 @@ app.post('/api/assets', requireAuth, async (req, res) => {
       assigneeDetail: null,
       location: location || 'Laboratorio',
       value: formatValue(value),
-      lastAudit: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
-      serial: serial || 'S/N-UNKNOWN',
+      lastAudit: registeredOn,
+      // A single serial cannot be shared by several units: batches start without one.
+      serial: (quantity === 1 && serial) || 'S/N-UNKNOWN',
       purchaseDate: purchaseDateFmt,
       imageUrl: imageUrl || undefined,
       specs: [
@@ -309,27 +340,39 @@ app.post('/api/assets', requireAuth, async (req, res) => {
         acquired: 'Adquisición de TI'
       },
       history: [
-        { action: 'Ingreso al Catálogo', date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }), by: 'Admin de Sistema', type: 'provision' }
+        { action: 'Ingreso al Catálogo', date: registeredOn, by: 'Admin de Sistema', type: 'provision' }
       ],
       maintenance: []
-    };
+    });
 
-    const saved = await db.saveAsset(newAsset);
+    const created = [];
+    try {
+      for (let i = 0; i < quantity; i++) {
+        created.push(await db.saveAsset(buildAsset(customId ?? nextId())));
+      }
+    } catch (err) {
+      // Do not leave a half-registered batch behind.
+      for (const a of created) await db.deleteAsset(a.id).catch(() => {});
+      throw err;
+    }
 
-    // Save audit log
+    const ids = created.map(a => a.id);
     await db.saveLog({
-      id: `LOG-${Math.floor(80000 + Math.random() * 10000)}`,
+      id: newLogId(),
       user: 'Admin del Sistema',
-      email: 'admin@enterprise.com',
+      email: req.user.email,
       action: 'Registro',
-      detail: `Equipo AST- ${newAsset.id} (${newAsset.name}) registrado e importado al catálogo.`,
+      detail: quantity === 1
+        ? `Equipo ${ids[0]} (${created[0].name}) registrado e importado al catálogo.`
+        : `${quantity} unidades de ${created[0].name} registradas (${ids[0]} … ${ids[ids.length - 1]}).`,
       time: getFormattedTime(),
       icon: 'add_box',
       iconColor: '#7c3aed',
       iconBg: 'rgba(124,58,237,0.08)'
     });
 
-    res.status(201).json(saved);
+    // Single unit: the asset itself (as before). Batch: the first asset plus the list of created IDs.
+    res.status(201).json(quantity === 1 ? created[0] : { ...created[0], createdCount: quantity, createdIds: ids });
   } catch (err) {
     serverError(res, err);
   }
@@ -386,6 +429,131 @@ app.delete('/api/assets/:id', requireAuth, async (req, res) => {
     });
     
     res.json(deleted);
+  } catch (err) {
+    serverError(res, err);
+  }
+});
+
+// Endpoint: Class loans (one or several units to the same student)
+app.post('/api/loans', requireAuth, async (req, res) => {
+  try {
+    const { assetIds, studentName, studentId, tableNumber, loanDate } = req.body ?? {};
+    const text = (v, max) => typeof v === 'string' && v.trim() && v.trim().length <= max;
+
+    if (!Array.isArray(assetIds) || assetIds.length < 1 || assetIds.length > MAX_UNITS_PER_BATCH
+        || !assetIds.every(i => typeof i === 'string' && i.length <= 40)
+        || new Set(assetIds).size !== assetIds.length) {
+      return res.status(400).json({ error: `Selecciona entre 1 y ${MAX_UNITS_PER_BATCH} unidades distintas.` });
+    }
+    if (!text(studentName, 100) || !text(studentId, 40) || !text(tableNumber, 40)) {
+      return res.status(400).json({ error: 'Todos los campos del alumno y de mesa son obligatorios.' });
+    }
+
+    const assets = [];
+    for (const id of assetIds) {
+      const asset = await db.getAssetById(id);
+      if (!asset) return res.status(404).json({ error: `El equipo ${id} no existe.` });
+      if (asset.status !== 'Available') {
+        return res.status(409).json({ error: `El equipo ${id} ya no está disponible. Actualiza la lista e inténtalo de nuevo.` });
+      }
+      assets.push(asset);
+    }
+
+    const loan = {
+      status: 'Lent',
+      assignee: studentName.trim(),
+      borrowerId: studentId.trim(),
+      tableNumber: tableNumber.trim(),
+      loanDate: typeof loanDate === 'string' && loanDate.length <= 20 ? loanDate : getFormattedTime(),
+    };
+
+    const done = [];
+    try {
+      for (const asset of assets) {
+        done.push(await db.updateAsset(asset.id, loan));
+      }
+    } catch (err) {
+      // Release the units already assigned so the batch is all-or-nothing.
+      for (const a of done) {
+        await db.updateAsset(a.id, { status: 'Available', assignee: null, borrowerId: null, tableNumber: null, loanDate: null }).catch(() => {});
+      }
+      throw err;
+    }
+
+    const ids = done.map(a => a.id);
+    await db.saveLog({
+      id: newLogId(),
+      user: 'Profesor de Redes',
+      email: req.user.email,
+      action: 'Asignación',
+      detail: done.length === 1
+        ? `Equipo ${ids[0]} (${done[0].name}) prestado al alumno ${loan.assignee} (Mesa ${loan.tableNumber}).`
+        : `${done.length} unidades de ${done[0].name} (${ids.join(', ')}) prestadas al alumno ${loan.assignee} (Mesa ${loan.tableNumber}).`,
+      time: getFormattedTime(),
+      icon: 'assignment_turned_in',
+      iconColor: '#2563eb',
+      iconBg: 'rgba(37,99,235,0.08)',
+    });
+
+    res.status(201).json({ loaned: done });
+  } catch (err) {
+    serverError(res, err);
+  }
+});
+
+// Endpoint: Return one or several lent units to stock
+app.post('/api/loans/return', requireAuth, async (req, res) => {
+  try {
+    const { assetIds } = req.body ?? {};
+    if (!Array.isArray(assetIds) || assetIds.length < 1 || assetIds.length > MAX_UNITS_PER_BATCH
+        || !assetIds.every(i => typeof i === 'string' && i.length <= 40)
+        || new Set(assetIds).size !== assetIds.length) {
+      return res.status(400).json({ error: `Selecciona entre 1 y ${MAX_UNITS_PER_BATCH} unidades distintas.` });
+    }
+
+    const assets = [];
+    for (const id of assetIds) {
+      const asset = await db.getAssetById(id);
+      if (!asset) return res.status(404).json({ error: `El equipo ${id} no existe.` });
+      if (asset.status !== 'Lent' && asset.status !== 'Assigned') {
+        return res.status(409).json({ error: `El equipo ${id} no está prestado. Actualiza la lista e inténtalo de nuevo.` });
+      }
+      assets.push(asset);
+    }
+
+    const cleared = { status: 'Available', assignee: null, borrowerId: null, tableNumber: null, loanDate: null };
+    const done = [];
+    try {
+      for (const asset of assets) {
+        await db.updateAsset(asset.id, cleared);
+        done.push(asset);
+      }
+    } catch (err) {
+      // Put the already-returned units back as they were, so the batch is all-or-nothing.
+      for (const a of done) {
+        await db.updateAsset(a.id, {
+          status: a.status, assignee: a.assignee, borrowerId: a.borrowerId, tableNumber: a.tableNumber, loanDate: a.loanDate,
+        }).catch(() => {});
+      }
+      throw err;
+    }
+
+    const students = [...new Set(assets.map(a => a.assignee).filter(Boolean))].join(', ') || 'el alumno';
+    await db.saveLog({
+      id: newLogId(),
+      user: 'Profesor de Redes',
+      email: req.user.email,
+      action: 'Devolución',
+      detail: assets.length === 1
+        ? `Equipo ${assets[0].id} (${assets[0].name}) devuelto por ${students} y reintegrado al stock.`
+        : `${assets.length} equipos (${assets.map(a => a.id).join(', ')}) devueltos por ${students} y reintegrados al stock.`,
+      time: getFormattedTime(),
+      icon: 'check_circle',
+      iconColor: '#0e7490',
+      iconBg: 'rgba(5,150,105,0.08)',
+    });
+
+    res.json({ returned: assets.map(a => a.id) });
   } catch (err) {
     serverError(res, err);
   }

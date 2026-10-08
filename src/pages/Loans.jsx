@@ -26,7 +26,8 @@ export default function Loans() {
   const [isLoading, setIsLoading] = useState(true);
   
   // Checkout Form States
-  const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [selectedGroupKey, setSelectedGroupKey] = useState('');
+  const [loanQty, setLoanQty] = useState(1);
   const [studentName, setStudentName] = useState('');
   const [studentId, setStudentId] = useState('');
   const [tableNumber, setTableNumber] = useState('');
@@ -37,7 +38,8 @@ export default function Loans() {
 
   // Return Modal States
   const [showReturnModal, setShowReturnModal] = useState(false);
-  const [assetToReturn, setAssetToReturn] = useState(null);
+  const [unitsToReturn, setUnitsToReturn] = useState([]);
+  const [isReturning, setIsReturning] = useState(false);
   const [resetChecked, setResetChecked] = useState(false);
   const [cablesChecked, setCablesChecked] = useState(false);
   const [damageChecked, setDamageChecked] = useState(false);
@@ -142,7 +144,8 @@ export default function Loans() {
     e.preventDefault();
     setFormError('');
     setFormSuccess('');
-    if (!selectedAssetId) {
+    const group = availableGroups.find(g => g.key === selectedGroupKey);
+    if (!group) {
       setFormError('Por favor seleccione un equipo de la lista.');
       return;
     }
@@ -151,36 +154,26 @@ export default function Loans() {
       return;
     }
 
+    const qty = Math.min(group.units.length, Math.max(1, Math.floor(Number(loanQty)) || 1));
+    const units = group.units.slice(0, qty);
+
     setIsSubmitting(true);
     try {
-      const asset = assets.find(a => a.id === selectedAssetId);
-      if (!asset) throw new Error('Activo no encontrado.');
-
-      // Update asset properties
-      const updatedAsset = {
-        ...asset,
-        status: 'Lent',
-        assignee: studentName.trim(),
-        borrowerId: studentId.trim(),
+      await api.createLoan({
+        assetIds: units.map(u => u.id),
+        studentName: studentName.trim(),
+        studentId: studentId.trim(),
         tableNumber: tableNumber.trim(),
         loanDate: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-      };
-
-      await api.updateAsset(selectedAssetId, updatedAsset);
-
-      // Create Audit Log
-      await api.createLog({
-        user: 'Profesor de Redes',
-        email: 'admin@enterprise.com',
-        action: 'Asignación',
-        detail: `Equipo ${asset.id} (${asset.name}) prestado al alumno ${studentName.trim()} (Mesa ${tableNumber.trim()}).`,
-        icon: 'assignment_turned_in',
-        iconColor: '#2563eb',
-        iconBg: 'rgba(37,99,235,0.08)',
       });
 
-      setFormSuccess(`¡Equipo ${asset.id} asignado con éxito a ${studentName.trim()}!`);
-      setSelectedAssetId('');
+      setFormSuccess(
+        qty === 1
+          ? `¡Equipo ${units[0].id} asignado con éxito a ${studentName.trim()}!`
+          : `¡${qty} unidades de ${group.name} asignadas con éxito a ${studentName.trim()}!`
+      );
+      setSelectedGroupKey('');
+      setLoanQty(1);
       setStudentName('');
       setStudentId('');
       setTableNumber('');
@@ -190,13 +183,14 @@ export default function Loans() {
       window.dispatchEvent(new CustomEvent('inventory-updated'));
     } catch (err) {
       setFormError(err.message || 'Error al procesar el préstamo.');
+      loadAssets(); // the list may be stale (e.g. a unit was lent meanwhile)
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleOpenReturnModal = (asset) => {
-    setAssetToReturn(asset);
+  const handleOpenReturnModal = (units) => {
+    setUnitsToReturn(units);
     setResetChecked(false);
     setCablesChecked(false);
     setDamageChecked(false);
@@ -210,43 +204,50 @@ export default function Loans() {
       return;
     }
 
+    setIsReturning(true);
     try {
-      // Reset properties back to available
-      const updatedAsset = {
-        ...assetToReturn,
-        status: 'Available',
-        assignee: null,
-        borrowerId: null,
-        tableNumber: null,
-        loanDate: null,
-      };
-
-      await api.updateAsset(assetToReturn.id, updatedAsset);
-
-      // Create Return Audit Log
-      await api.createLog({
-        user: 'Profesor de Redes',
-        email: 'admin@enterprise.com',
-        action: 'Devolución',
-        detail: `Equipo ${assetToReturn.id} (${assetToReturn.name}) devuelto por el alumno y reintegrado al stock.`,
-        icon: 'check_circle',
-        iconColor: '#0e7490',
-        iconBg: 'rgba(5,150,105,0.08)',
-      });
+      await api.returnLoans(unitsToReturn.map(u => u.id));
 
       setShowReturnModal(false);
-      setAssetToReturn(null);
+      setUnitsToReturn([]);
       loadAssets();
 
       // Dispatch global event
       window.dispatchEvent(new CustomEvent('inventory-updated'));
     } catch (err) {
       setReturnError(err.message || 'Error al procesar la devolución.');
+      loadAssets(); // the list may be stale
+    } finally {
+      setIsReturning(false);
     }
   };
 
   const availableAssets = assets.filter(a => a.status === 'Available');
+
+  // Identical units (same name, category and description) are offered as one product with a count.
+  const groupKey = (a) => [a.name, a.category, a.sub].map(v => String(v ?? '').trim().toLowerCase()).join('|');
+  const availableGroups = (() => {
+    const map = new Map();
+    for (const a of [...availableAssets].sort((x, y) => x.id.localeCompare(y.id))) {
+      const key = groupKey(a);
+      if (!map.has(key)) map.set(key, { key, name: a.name, category: a.category, units: [] });
+      map.get(key).units.push(a);
+    }
+    return [...map.values()].sort((x, y) => x.name.localeCompare(y.name));
+  })();
+  const selectedGroup = availableGroups.find(g => g.key === selectedGroupKey);
+  const maxQty = selectedGroup ? selectedGroup.units.length : 1;
+  const qtyValue = Math.min(maxQty, Math.max(1, Math.floor(Number(loanQty)) || 1));
   const lentAssets = assets.filter(a => a.status === 'Lent' || a.status === 'Assigned');
+
+  // All units currently lent to the same student (used by "Devolver todo").
+  const studentKey = (a) => `${String(a.assignee ?? '').trim().toLowerCase()}|${String(a.borrowerId ?? '').trim().toLowerCase()}`;
+  const lentByStudent = new Map();
+  for (const a of lentAssets) {
+    const k = studentKey(a);
+    if (!lentByStudent.has(k)) lentByStudent.set(k, []);
+    lentByStudent.get(k).push(a);
+  }
 
   const filteredLentAssets = lentAssets.filter(asset => {
     const q = loansSearch.toLowerCase();
@@ -377,20 +378,65 @@ export default function Loans() {
                 <div className="relative">
                   <select
                     className="input-premium w-full py-2 pl-3 pr-8 text-[12px] appearance-none cursor-pointer font-medium"
-                    value={selectedAssetId}
-                    onChange={e => setSelectedAssetId(e.target.value)}
+                    value={selectedGroupKey}
+                    onChange={e => { setSelectedGroupKey(e.target.value); setLoanQty(1); }}
                     required
                   >
                     <option value="">-- Seleccionar Equipo Disponible --</option>
-                    {availableAssets.map(a => (
-                      <option key={a.id} value={a.id}>
-                        [{a.id}] {a.name} — {CATEGORY_LABELS[a.category] || a.category}
+                    {availableGroups.map(g => (
+                      <option key={g.key} value={g.key}>
+                        {g.units.length === 1
+                          ? `[${g.units[0].id}] ${g.name} — ${CATEGORY_LABELS[g.category] || g.category}`
+                          : `${g.name} — ${CATEGORY_LABELS[g.category] || g.category} (${g.units.length} disponibles)`}
                       </option>
                     ))}
                   </select>
                   <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" style={{ fontSize: '16px' }}>expand_more</span>
                 </div>
               </div>
+
+              {selectedGroup && selectedGroup.units.length > 1 && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider font-medium">Unidades a prestar</label>
+                  <div className="flex items-center gap-3">
+                    <div className="inline-flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-[var(--bg-card)]">
+                      <button
+                        type="button"
+                        onClick={() => setLoanQty(Math.max(1, qtyValue - 1))}
+                        disabled={qtyValue <= 1}
+                        aria-label="Menos unidades"
+                        className="w-9 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '17px' }}>remove</span>
+                      </button>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min="1"
+                        max={maxQty}
+                        value={loanQty}
+                        onChange={e => setLoanQty(e.target.value === '' ? '' : Math.min(maxQty, Math.max(1, Math.floor(Number(e.target.value)) || 1)))}
+                        onBlur={() => setLoanQty(qtyValue)}
+                        onFocus={e => e.target.select()}
+                        aria-label="Unidades a prestar"
+                        className="w-14 text-center text-[13px] font-bold text-slate-800 dark:text-slate-100 bg-transparent border-x border-slate-200 outline-none py-1.5 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setLoanQty(Math.min(maxQty, qtyValue + 1))}
+                        disabled={qtyValue >= maxQty}
+                        aria-label="Más unidades"
+                        className="w-9 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '17px' }}>add</span>
+                      </button>
+                    </div>
+                    <p className="text-[11.5px] text-slate-400 leading-snug flex-1">
+                      de <span className="font-semibold text-slate-600">{maxQty}</span> disponibles. Se asignan {qtyValue === 1 ? 'la primera unidad' : `las ${qtyValue} primeras unidades`} al mismo alumno.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider font-medium font-medium">Nombre Completo del Alumno</label>
@@ -437,7 +483,7 @@ export default function Loans() {
                 {isSubmitting ? 'Procesando...' : (
                   <>
                     <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>assignment_ind</span>
-                    <span>Registrar Salida</span>
+                    <span>{qtyValue > 1 ? `Prestar ${qtyValue} Unidades` : 'Registrar Salida'}</span>
                   </>
                 )}
               </button>
@@ -527,12 +573,23 @@ export default function Loans() {
                             <span className="text-[11px] text-slate-400 font-mono">{asset.loanDate || 'N/A'}</span>
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <button
-                              onClick={() => handleOpenReturnModal(asset)}
-                              className="px-2.5 py-1 rounded bg-violet-50 dark:bg-violet-950/20 text-violet-700 hover:bg-violet-100 dark:hover:bg-violet-950/40 border border-violet-200/30 text-[11px] font-bold transition-all"
-                            >
-                              Devolver
-                            </button>
+                            <div className="inline-flex flex-col items-end gap-1">
+                              <button
+                                onClick={() => handleOpenReturnModal([asset])}
+                                className="px-2.5 py-1 rounded bg-violet-50 dark:bg-violet-950/20 text-violet-700 hover:bg-violet-100 dark:hover:bg-violet-950/40 border border-violet-200/30 text-[11px] font-bold transition-all"
+                              >
+                                Devolver
+                              </button>
+                              {(lentByStudent.get(studentKey(asset))?.length ?? 0) > 1 && (
+                                <button
+                                  onClick={() => handleOpenReturnModal(lentByStudent.get(studentKey(asset)))}
+                                  title={`Devolver todos los equipos de ${asset.assignee}`}
+                                  className="px-2.5 py-1 rounded bg-blue-50 dark:bg-blue-950/20 text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-950/40 border border-blue-200/40 text-[11px] font-bold transition-all whitespace-nowrap"
+                                >
+                                  Devolver todo ({lentByStudent.get(studentKey(asset)).length})
+                                </button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -555,7 +612,7 @@ export default function Loans() {
       </div>
 
       {/* Return & Checklist Modal */}
-      {showReturnModal && assetToReturn && (
+      {showReturnModal && unitsToReturn.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowReturnModal(false)} />
 
@@ -566,7 +623,7 @@ export default function Loans() {
             <div className="px-6 py-4 border-b border-[var(--border-light)] flex justify-between items-center">
               <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 <span className="material-symbols-outlined text-violet-700" style={{ fontSize: '18px' }}>task_alt</span>
-                Retorno Seguro: {assetToReturn.id}
+                {unitsToReturn.length === 1 ? `Retorno Seguro: ${unitsToReturn[0].id}` : `Retorno Seguro: ${unitsToReturn.length} equipos`}
               </h3>
               <button onClick={() => setShowReturnModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
@@ -575,9 +632,25 @@ export default function Loans() {
 
             {/* Body */}
             <div className="p-6 flex flex-col gap-4">
-              <p className="text-[12.5px] text-slate-500 dark:text-slate-400 leading-relaxed mb-1">
-                Para reintegrar el equipo <span className="font-semibold text-slate-700 dark:text-slate-200">{assetToReturn.name}</span> al stock disponible, complete la lista de verificación:
-              </p>
+              {unitsToReturn.length === 1 ? (
+                <p className="text-[12.5px] text-slate-500 dark:text-slate-400 leading-relaxed mb-1">
+                  Para reintegrar el equipo <span className="font-semibold text-slate-700 dark:text-slate-200">{unitsToReturn[0].name}</span> al stock disponible, complete la lista de verificación:
+                </p>
+              ) : (
+                <div className="mb-1">
+                  <p className="text-[12.5px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Se reintegrarán al stock los <span className="font-semibold text-slate-700 dark:text-slate-200">{unitsToReturn.length} equipos</span> prestados a{' '}
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">{unitsToReturn[0].assignee}</span>. La lista de verificación aplica a todos:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-2.5 max-h-24 overflow-y-auto">
+                    {unitsToReturn.map(u => (
+                      <span key={u.id} title={u.name} className="text-[10.5px] font-mono font-bold text-violet-700 bg-violet-50 dark:bg-violet-950/20 border border-violet-200/40 px-2 py-0.5 rounded-full">
+                        {u.id}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {returnError && (
                 <div className="text-[12px] text-red-600 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-2.5 rounded-lg">
@@ -639,10 +712,11 @@ export default function Loans() {
                 <button
                   type="button"
                   onClick={handleConfirmReturn}
-                  className="btn-electric px-5 py-2 text-[12px] flex items-center gap-1"
+                  disabled={isReturning}
+                  className="btn-electric px-5 py-2 text-[12px] flex items-center gap-1 disabled:opacity-60"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>save</span>
-                  Confirmar Retorno
+                  {isReturning ? 'Procesando...' : (unitsToReturn.length > 1 ? `Confirmar Retorno de ${unitsToReturn.length}` : 'Confirmar Retorno')}
                 </button>
               </div>
             </div>

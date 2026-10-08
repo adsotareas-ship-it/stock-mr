@@ -61,6 +61,16 @@ export const api = {
     method: 'DELETE',
   }),
   
+  createLoan: (loanData) => request('/loans', {
+    method: 'POST',
+    body: JSON.stringify(loanData),
+  }),
+
+  returnLoans: (assetIds) => request('/loans/return', {
+    method: 'POST',
+    body: JSON.stringify({ assetIds }),
+  }),
+
   getTickets: () => request('/tickets'),
 
   deleteTicket: (id) => request(`/tickets/${encodeURIComponent(id)}`, {

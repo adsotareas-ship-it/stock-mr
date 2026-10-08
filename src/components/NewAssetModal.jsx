@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { api } from '../utils/api';
 import CategoryCombobox from './CategoryCombobox';
 
+const MAX_UNITS = 100;
+
 export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Laptop');
@@ -10,11 +12,15 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
   const [location, setLocation] = useState('Laboratorio');
   const [sub, setSub] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const valueInputRef = useRef(null);
 
   if (!isOpen) return null;
+
+  const clampQty = (n) => Math.min(MAX_UNITS, Math.max(1, Math.floor(Number(n)) || 1));
+  const isBatch = quantity > 1;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,10 +32,11 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
         name,
         category,
         sub: sub || `${category} Corporativo`,
-        serial: serial || undefined,
+        serial: isBatch ? undefined : (serial || undefined),
         value: value !== '' ? value : '0',
         location,
         imageUrl: imageUrl || undefined,
+        quantity: clampQty(quantity),
       };
 
       const saved = await api.createAsset(assetData);
@@ -44,6 +51,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
       setLocation('Laboratorio');
       setSub('');
       setImageUrl('');
+      setQuantity(1);
     } catch (err) {
       setError(err.message || 'Error al guardar el activo.');
     } finally {
@@ -117,6 +125,49 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
             </div>
 
             <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Cantidad de unidades</label>
+              <div className="flex items-center gap-3">
+                <div className="inline-flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(q => clampQty(q - 1))}
+                    disabled={quantity <= 1}
+                    aria-label="Menos unidades"
+                    className="w-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>remove</span>
+                  </button>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    max={MAX_UNITS}
+                    value={quantity}
+                    onChange={e => setQuantity(e.target.value === '' ? '' : clampQty(e.target.value))}
+                    onBlur={() => setQuantity(q => clampQty(q))}
+                    onFocus={e => e.target.select()}
+                    aria-label="Cantidad de unidades"
+                    className="w-16 text-center text-[14px] font-bold text-slate-800 border-x border-slate-200 outline-none py-2 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(q => clampQty(q + 1))}
+                    disabled={quantity >= MAX_UNITS}
+                    aria-label="Más unidades"
+                    className="w-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+                  </button>
+                </div>
+                <p className="text-[11.5px] text-slate-400 leading-snug flex-1">
+                  {isBatch
+                    ? `Se crearán ${quantity} registros independientes, cada uno con su propio ID, para prestarlos y repararlos por separado.`
+                    : 'Si tienes varias unidades iguales, súbelas de una vez (máx. 100).'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Descripción Breve / Especificaciones básicas</label>
               <input
                 type="text"
@@ -132,8 +183,9 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
               <input
                 type="text"
                 className="input-premium w-full px-3 py-2 text-[13px] font-mono"
-                placeholder="Ej. C02FG492Q05D  (escanea o escribe)"
-                value={serial}
+                placeholder={isBatch ? 'Cada unidad tendrá su propio S/N (edítalo luego)' : 'Ej. C02FG492Q05D  (escanea o escribe)'}
+                value={isBatch ? '' : serial}
+                disabled={isBatch}
                 onChange={e => setSerial(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
@@ -145,7 +197,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP)</label>
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Costo de Adquisición (COP){isBatch ? ' · c/u' : ''}</label>
               <input
                 ref={valueInputRef}
                 type="number"
@@ -192,7 +244,7 @@ export default function NewAssetModal({ isOpen, onClose, onSave }) {
               ) : (
                 <>
                   <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>save</span>
-                  <span>Guardar Activo</span>
+                  <span>{isBatch ? `Guardar ${quantity} Activos` : 'Guardar Activo'}</span>
                 </>
               )}
             </button>
