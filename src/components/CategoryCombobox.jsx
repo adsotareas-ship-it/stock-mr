@@ -15,9 +15,12 @@ const PRESET_CATEGORIES = [
     'Teclado', 'Mouse', 'Cámara', 'Audio y Sonido', 'Micrófono', 'Almacenamiento',
     'Memoria USB', 'Disco duro', 'UPS / Energía', 'Cables y Conectores',
     'Accesorios', 'Herramientas', 'Mobiliario', 'Consola de videojuegos',
-    'Wearable', 'Telefonía IP', 'Seguridad / CCTV', 'Otros',
+    'Wearable', 'Telefonía IP', 'Seguridad / CCTV',
   ].map(c => ({ value: c, label: c })),
 ];
+
+// Opción especial: no se guarda, solo vacía el campo para que se escriba la categoría.
+const OTHER = { value: '__other__', label: 'Otra (escribir)...' };
 
 const labelOf = (options, v) => options.find(o => o.value === v)?.label ?? v;
 
@@ -28,6 +31,7 @@ export default function CategoryCombobox({ value, onChange }) {
   // Solo se filtra la lista mientras la persona escribe; al abrir se muestran todas.
   const [typed, setTyped] = useState(false);
   const ref = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => { setQuery(labelOf(options, value) || ''); }, [value, options]);
 
@@ -66,6 +70,14 @@ export default function CategoryCombobox({ value, onChange }) {
   const isCustom = q && !options.some(o => o.label.toLowerCase() === q || o.value.toLowerCase() === q);
 
   function select(opt) {
+    if (opt.value === OTHER.value) {
+      onChange('');
+      setQuery('');
+      setTyped(true);
+      setOpen(false);
+      inputRef.current?.focus();
+      return;
+    }
     onChange(opt.value);
     setQuery(opt.label);
     setTyped(false);
@@ -92,6 +104,8 @@ export default function CategoryCombobox({ value, onChange }) {
     <div ref={ref} style={{ position: 'relative' }}>
       <div style={{ position: 'relative' }}>
         <input
+          ref={inputRef}
+          required
           type="text"
           className="input-premium w-full px-3 py-2 text-[13px]"
           style={{ paddingRight: '32px' }}
@@ -127,7 +141,7 @@ export default function CategoryCombobox({ value, onChange }) {
         </button>
       </div>
 
-      {open && (filtered.length > 0 || isCustom) && (
+      {open && (
         <ul
           style={{
             position: 'absolute',
@@ -174,6 +188,29 @@ export default function CategoryCombobox({ value, onChange }) {
             </li>
             );
           })}
+          {!(typed && q) && (
+            <li
+              onMouseDown={e => { e.preventDefault(); select(OTHER); }}
+              style={{
+                padding: '8px 12px',
+                fontSize: '13px',
+                borderRadius: '7px',
+                cursor: 'pointer',
+                color: '#7c3aed',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                borderTop: '1px solid var(--border-light, #e2e8f0)',
+                marginTop: '2px',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(124,58,237,0.06)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#7c3aed' }}>edit</span>
+              {OTHER.label}
+            </li>
+          )}
           {isCustom && (
             <li
               onMouseDown={() => select({ value: query.trim(), label: query.trim() })}
