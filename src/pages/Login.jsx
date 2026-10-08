@@ -140,10 +140,10 @@ export default function Login() {
           </div>
 
           <h1 className="text-[34px] sm:text-[38px] font-extrabold tracking-tight leading-[1.05] text-slate-900">
-            ¡Bienvenido <span className="text-gradient-electric">de vuelta!</span>
+            Tu inventario <span className="text-gradient-electric">te espera</span>
           </h1>
           <p className="mt-2.5 text-[14.5px] text-slate-500 leading-relaxed">
-            Accede a tu cuenta para gestionar y auditar los activos de TI de tu organización.
+            Ingresa tus credenciales para registrar equipos, controlar préstamos y llevar al día cada auditoría.
           </p>
 
           {error && (
